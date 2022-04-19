@@ -1,0 +1,38 @@
+.field {
+  margin-bottom: 3px;
+  width: 90%;
+  color: white;
+}
+#mainTextField {
+  margin-left: 2.5%;
+  min-height: 50px;
+  display: flex;
+  width: 95%;
+  left: 280px;
+  background-color: $inputColor;
+  justify-content: space-around;
+  border-radius: 8px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.textField__button {
+  height: min-content;
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+[contenteditable="true"]:active,
+[contenteditable="true"]:focus {
+  border: none;
+  outline: none;
+}
+[contenteditable]:empty:before {
+  content: attr(data-placeholder);
+  color: grey;
+  display: inline-block;
+}

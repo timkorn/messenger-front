@@ -1,0 +1,102 @@
+#channel__header {
+  height: 80px;
+  background-color: $secondColor;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $additionalHeaderHEX;
+  box-sizing: border-box;
+}
+
+#channel-wrapper {
+  width: 100%;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+#channel__header-description {
+  color: grey;
+  margin-left: $defaultMargin;
+}
+
+#channel__header-title {
+  display: flex;
+  align-items: baseline;
+}
+#channel__header-img {
+  margin: 10px $defaultMargin 0 $defaultMargin;
+}
+
+button.channel__header-b {
+  height: 40px;
+  width: 55px;
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: $inputColor;
+  cursor: pointer;
+  border-radius: 34px;
+  margin-right: $defaultMargin;
+}
+
+#channel__header-buttons {
+  display: flex;
+}
+#channel-main {
+  flex-grow: 1;
+}
+#channel-main__messages {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+#channel-main_message-list {
+  width: 100%;
+  height: calc(100vh - 145px);
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.channel-message {
+  display: flex;
+  justify-content: row;
+  margin-bottom: $defaultMargin;
+  margin-left: 30px;
+  align-self: flex-end;
+}
+.channel-message__ava {
+  margin-right: $defaultMargin;
+  margin-top: 5px;
+}
+
+.channel-message__body {
+  font-weight: 100;
+  font-size: 13px;
+  max-width: 90%;
+  line-height: 1.5;
+}
+.channel-message__title {
+  display: flex;
+  align-items: baseline;
+}
+
+.channel-message__time {
+  margin-left: 10px;
+  font-size: 10px;
+  color: $additionalHeaderColor;
+}
+
+.channel-message__img {
+  border-radius: 100px;
+  height: 32px;
+  width: 32px;
+}
+
+#channel-main_message-list > :first-child {
+  margin-top: auto !important;
+}

@@ -1,0 +1,191 @@
+#sidebar {
+  background-color: $secondColor;
+  height: 100vh;
+  width: 260px;
+  display: flex;
+  color: white;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  padding: 15px 0px 0px 15px;
+  font-size: $sidebarFontSize;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-right: 1px solid $additionalHeaderHEX;
+}
+.sidebar_icon {
+  margin-right: $defaultMargin;
+  margin-left: 5px;
+}
+.sidebar_main_channels {
+  flex-grow: 1;
+}
+#sidebar_main_channels_h {
+  margin-top: 10px;
+  align-items: center;
+  color: $additionalHeaderColor;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+#sidebar_header {
+  margin-bottom: ($defaultMargin + 15);
+  max-height: 40px;
+  font-size: 20px;
+}
+#sidebar_header div {
+  align-items: center;
+}
+#sidebar_header div,
+#sidebar_footer_user {
+  display: flex;
+  flex-direction: row;
+}
+
+#tLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  margin-right: $defaultMargin;
+}
+#sidebar_main_default,
+#sidebar_main {
+  flex-direction: column;
+  display: flex;
+}
+
+#sedebar_arrow {
+  width: 17px;
+  height: 10px;
+}
+
+.sidebar_channel,
+.sidebar_main_topics {
+  height: 35px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.sidebar_arrow {
+  margin-left: $defaultMargin;
+  img {
+    width: 13px;
+    vertical-align: middle;
+    height: 13px;
+  }
+}
+.sidebar_main_topics img {
+  width: 18px;
+}
+#groupChat {
+  width: 28px;
+  margin-right: 5px;
+}
+
+#sidebar_footer {
+  display: flex;
+  align-items: center;
+  height: 65px;
+  margin: 0 -15px;
+  padding-left: 15px;
+  border-top: 1px solid $additionalHeaderHEX;
+}
+#sidebar_main {
+  flex-grow: 1;
+}
+
+#sidebar_footer_ava {
+  margin-right: $defaultMargin;
+  width: 30px;
+  height: 30px;
+}
+
+#sidebar_footer_user {
+  align-items: center;
+  #sidebar_userName {
+    flex-grow: 1;
+  }
+}
+#hashtag {
+  width: 13px;
+}
+.sidebar_choice {
+  font-size: 14px;
+  border-radius: 5px;
+  display: block;
+  margin-right: $defaultMargin;
+  &:hover {
+    background-color: $hoverSidebarChannel;
+  }
+}
+#sidebar_userName {
+  flex-grow: 1;
+}
+
+#channelList {
+  overflow-y: scroll;
+  height: calc(100vh - 283px);
+}
+.footer_settings {
+  margin-left: 15px;
+  img {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.activeSidebar {
+  background-color: rgba(121, 128, 134, 0.5);
+}
+
+#sidebar_main_channels_header {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 15px;
+  align-items: center;
+}
+
+#create-channel {
+  position: relative;
+  background-color: $secondColor;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  border-radius: 30px;
+  border: 1px solid rgba(142, 146, 151, 0.6);
+}
+
+.modal-central {
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#create-chan-button {
+  background-color: $mainButtonColor;
+  color: white;
+  align-self: center;
+  margin-top: 50px;
+  margin-bottom: 15px;
+}
+
+#create-channel-form {
+  width: 80%;
+}
+#create-channel-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.closeModal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  img {
+    width: 30px;
+    height: 30px;
+  }
+}

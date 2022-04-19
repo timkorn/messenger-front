@@ -1,0 +1,64 @@
+* {
+  scrollbar-width: thin;
+  scrollbar-color: black;
+}
+
+/* для Chrome/Edge/Safari */
+*::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: black;
+  border-radius: 5px;
+}
+
+body {
+  max-height: 100vh;
+  height: 100vh;
+  margin: 0;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: $mainColor;
+  overflow: hidden;
+}
+@font-face {
+  font-family: Verdana;
+  src: url("../fonsts/Verdana.ttf");
+}
+
+p {
+  margin-block-start: 0.7em;
+  margin-block-end: 0.7em;
+}
+
+a:active, /* активная/посещенная ссылка */
+a:hover,  /* при наведении */
+a {
+  text-decoration: none;
+  color: white;
+}
+.app-wrapper {
+  display: flex;
+}
+p {
+  font-size: 14px;
+  font-weight: 100;
+}
+/* .universalLoader {
+  position: absolute;
+  height: fit-content;
+  top: calc(50% - 19px);
+  left: calc(50% - 19px);
+} */
+button {
+  height: min-content;
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  cursor: pointer;
+}

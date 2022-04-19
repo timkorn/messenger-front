@@ -1,0 +1,13 @@
+.root {
+  height: min-content;
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  cursor: pointer;
+
+  &:active {
+    transform: scale(0.9, 0.9);
+  }
+}
