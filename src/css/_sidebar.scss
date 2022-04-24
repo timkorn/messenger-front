@@ -125,7 +125,7 @@
 
 #channelList {
   overflow-y: scroll;
-  height: calc(100vh - 283px);
+  height: calc(100vh - 218px);
 }
 .footer_settings {
   margin-left: 15px;
@@ -188,4 +188,50 @@
     width: 30px;
     height: 30px;
   }
+}
+
+.team-popover-additional {
+  display: flex;
+  border-top: 1px solid $hoverSidebarChannel;
+}
+.team-popover-choice {
+  max-height: 200px;
+  overflow-x: scroll;
+}
+.team-popover-choice a {
+  &:hover {
+    background-color: $hoverSidebarChannel;
+  }
+}
+.team-popover {
+  padding: 0 10px;
+  width: 190px;
+}
+
+.team-popover p {
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.team-popover-personal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.team-popover-personal p {
+  width: 160px;
+  overflow-x: hidden;
+  font-size: 12px;
+  color: $activeSidebarChannel;
+}
+.team-popover-item-active {
+  background-color: $hoverSidebarChannel;
+}
+
+.team-popover-choice-container {
+  padding: 0 5px;
+  display: flex;
+  justify-content: space-between;
+}
+.team-popover-choice a {
+  margin-right: 0px;
 }

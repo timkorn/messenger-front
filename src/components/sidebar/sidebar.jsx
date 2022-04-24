@@ -1,19 +1,19 @@
-import teamLogo from "./img/messengLogo.jpg";
-import plus from "../img/Plus.svg";
-import { NavLink } from "react-router-dom";
-import arrow from "./img/arrow.svg";
-import feedPic from "./img/feed.svg";
-import groupCh from "./img/Group.svg";
-import CommentSidebar from "./img/Comment.svg";
-import ava from "./img/ava.png";
-import sett from "./img/settings.svg";
-import MyButton from "../MyButton";
-import { Modal, Button, Popover } from "@material-ui/core";
+import { Button, Modal, Popover } from "@material-ui/core";
+import { Form, Formik } from "formik";
 import { useState } from "react";
-import { Formik, Form } from "formik";
-import { MyTextField, formStyle } from "../login.jsx";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import cross from "../img/Cross.svg";
+import plus from "../img/Plus.svg";
+import { formStyle, MyTextField } from "../login.jsx";
+import MyButton from "../MyButton";
+import arrow from "./img/arrow.svg";
+import chosen from "./img/chosen.svg";
+import CommentSidebar from "./img/Comment.svg";
+import feedPic from "./img/feed.svg";
+import groupCh from "./img/Group.svg";
+import logout from "./img/Logout.svg";
+import teamLogo from "./img/messengLogo.jpg";
 
 const channelShema = yup.object({
   name: yup
@@ -31,7 +31,11 @@ formStyle.style.width = "350px";
 /* formStyle.style.padding = "0 20px 0 0"; */
 
 function Sidebar() {
+  const history = useNavigate();
   const [open, setOpen] = useState(false);
+  const handleLogout = () => {
+    history("/login");
+  };
   const handleOpen = () => {
     setOpen(true);
   };
@@ -71,12 +75,57 @@ function Sidebar() {
               transformOrigin={{
                 horizontal: "center",
               }}
+              style={{
+                marginTop: "8px",
+              }}
             >
-              <div>
-                <p>Team 1</p>
-                <p>Team 2</p>
-                <p>Team 3</p>
-                <p>Team 4</p>
+              <div className="popover team-popover">
+                <div className="team-popover-personal">
+                  <p>timadzr@gmail.com</p>
+                  <MyButton src={logout} handleClick={handleLogout} />
+                </div>
+                <div className="team-popover-choice">
+                  <Link to="/" className="sidebar_choice">
+                    <div className="team-popover-choice-container">
+                      <div>
+                        <p>Курсач</p>
+                      </div>
+                      <img src={chosen} />
+                    </div>
+                  </Link>
+                  <Link to="/" className="sidebar_choice">
+                    <div className="team-popover-choice-container">
+                      <div>
+                        <p>Курсач</p>
+                      </div>
+                      <img src={chosen} />
+                    </div>
+                  </Link>
+                  <Link to="/" className="sidebar_choice">
+                    <div className="team-popover-choice-container">
+                      <div>
+                        <p>Курсач</p>
+                      </div>
+                      <img src={chosen} />
+                    </div>
+                  </Link>
+                </div>
+                <div className="team-popover-additional">
+                  {/* <img
+                    src={plus}
+                    alt="создание команды"
+                  /> */}
+                  <p>Создать команду</p>
+                </div>
+                <div className="team-popover-additional">
+                  {/* <img
+                    src={sett}
+                     className="sidebar_arrow" 
+                    alt="настройки"
+                    handleClick={handlePopover} 
+                  /> */}
+                  <p>Настройки</p>
+                </div>
               </div>
             </Popover>
           </div>
@@ -200,10 +249,10 @@ function Sidebar() {
               </Modal>
             </div>
             <div className="sidebar_main_channels ">
-              <div id="channelList">{/* <ChannelName /> */}</div>
+              <div id="channelList"></div>
             </div>
           </div>
-          <div id="sidebar_footer">
+          {/* <div id="sidebar_footer">
             <div id="sidebar_footer_user">
               <img src={ava} alt="Аватарка" id="sidebar_footer_ava" />
               <div id="sidebar_userName">Тимур Корнилов</div>
@@ -213,7 +262,7 @@ function Sidebar() {
                 className="footer_settings"
               />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

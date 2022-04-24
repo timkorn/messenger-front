@@ -7,6 +7,7 @@ import eyeClosed from "./img/Eye-closed.svg";
 import cross from "./img/Cross.svg";
 import * as yup from "yup";
 import arrow from "./img/Arrow left.svg";
+import axios from "axios";
 const formStyle = {
   style: { color: "white", width: "250px" },
   autoComplete: "off",
@@ -64,7 +65,26 @@ const Register = () => {
           }}
           validationSchema={registerShema}
           onSubmit={(data) => {
-            console.log(data);
+            async function f(data) {
+              try {
+                const email = data.email;
+                const password = data.password;
+                let response = await fetch(
+                  "http://localhost:8080/auth/register",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json;charset=utf-8",
+                    },
+                    body: JSON.stringify({ email, password }),
+                  }
+                );
+                console.log(JSON.stringify(response));
+              } catch (err) {
+                console.log(err);
+              }
+            }
+            f(data);
           }}
         >
           {({ values, isSubmitting, errors }) => (

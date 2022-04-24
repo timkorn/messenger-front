@@ -2,7 +2,6 @@ import { Formik, Field, Form, useField, ErrorMessage } from "formik";
 import { TextField, Button } from "@material-ui/core";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import cross from "./img/Cross.svg";
 import * as yup from "yup";
 import { withStyles } from "@material-ui/core/styles";
 
@@ -17,11 +16,7 @@ const loginShema = yup.object({
     .string()
     .email("Неправильный  формат почты")
     .required("Введите свою почту"),
-
   password: yup.string().required("Введите пароль"),
-  /*  .min(6, "Введите больше 6 символов")
-    .max(20, "Введите не больше 20 символов")
-    .matches(/^[A-Za-z0-9]+$/, "Формат: 1-9 и Aa-Zz") */
 });
 const styles = {
   root: {
@@ -50,23 +45,9 @@ const MyTextField = withStyles(styles)(function (props) {
     />
   );
 });
-/* const MyTextField = (props) => {
-  const [field, meta, helpers] = useField(props.name);
-  const errorText = meta.error && meta.touched ? meta.error : "";
-  return (
-    <TextField
-      {...props}
-      {...field}
-      FormHelperTextProps={{
-        style: { position: "absolute", bottom: "-20px" },
-      }}
-      helperText={errorText}
-      error={!!errorText}
-    />
-  );
-}; */
 
 const Login = () => {
+  const [loginError, setLoginError] = useState("");
   const [path, setPath] = useState("");
   return (
     <div id="login-wrapper">
@@ -81,7 +62,24 @@ const Login = () => {
           }}
           validationSchema={loginShema}
           onSubmit={(data) => {
-            console.log(data);
+            async function f(data) {
+              try {
+                const email = data.email;
+                const password = data.password;
+                let response = await fetch("http://localhost:8080/auth/login", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json;charset=utf-8",
+                  },
+                  body: JSON.stringify({ email, password }),
+                });
+                let result = await response.json();
+                console.log(result);
+              } catch (err) {
+                setLoginError("неправильные логин или пароль");
+              }
+            }
+            f(data);
           }}
         >
           {({ values, isSubmitting, errors }) => (
@@ -110,6 +108,8 @@ const Login = () => {
                   style: { color: "#fff" },
                 }}
               />
+              <p className="loginError">{loginError}</p>
+
               <div>
                 <Button id="regButton" variant="contained" type="submut">
                   Войти
