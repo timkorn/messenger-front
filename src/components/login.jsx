@@ -1,10 +1,23 @@
 import { Formik, Field, Form, useField, ErrorMessage } from "formik";
-import { TextField, Button } from "@material-ui/core";
+import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@mui/styles";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext.jsx";
+import MyLoadingButton from "./MyLoadingButton";
+import { ErrorBoundary } from "react-error-boundary";
 
+function ErrorFallback({ error, resetErrorBoundary }) {
+  return (
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
+  );
+}
 const formStyle = {
   style: { color: "white", width: "250px" },
   autoComplete: "off",
@@ -22,10 +35,18 @@ const styles = {
   root: {
     "& .MuiOutlinedInput-root": {
       "&:hover fieldset": {
+        borderColor: "white",
+      },
+      "& fieldset": {
         borderColor: "grey",
       },
       "&.Mui-focused fieldset": {
         borderColor: "grey",
+      },
+    },
+    "& .MuiFilledInput-root": {
+      "& .MuiInput-underline:after": {
+        borderBottomColor: "green",
       },
     },
   },
@@ -35,6 +56,7 @@ const MyTextField = withStyles(styles)(function (props) {
   const errorText = meta.error && meta.touched ? meta.error : "";
   return (
     <TextField
+      value={props.children}
       {...props}
       {...field}
       FormHelperTextProps={{
@@ -48,81 +70,69 @@ const MyTextField = withStyles(styles)(function (props) {
 
 const Login = () => {
   const [loginError, setLoginError] = useState("");
-  const [path, setPath] = useState("");
+  const { loginUser } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+
   return (
-    <div id="login-wrapper">
-      <div id="register-container">
-        <h1>Вход</h1>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <div id="login-wrapper">
+        <div id="register-container">
+          <h1>Вход</h1>
 
-        <Formik
-          id="register-form"
-          initialValues={{
-            email: "",
-            password: "",
-          }}
-          validationSchema={loginShema}
-          onSubmit={(data) => {
-            async function f(data) {
-              try {
-                const email = data.email;
-                const password = data.password;
-                let response = await fetch("http://localhost:8080/auth/login", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json;charset=utf-8",
-                  },
-                  body: JSON.stringify({ email, password }),
-                });
-                let result = await response.json();
-                console.log(result);
-              } catch (err) {
+          <Formik
+            id="register-form"
+            initialValues={{
+              email: "",
+              password: "",
+            }}
+            validationSchema={loginShema}
+            onSubmit={(data) => {
+              setLoginError(false);
+              setLoading(true);
+              loginUser(data).catch((err) => {
+                setLoading(false);
                 setLoginError("неправильные логин или пароль");
-              }
-            }
-            f(data);
-          }}
-        >
-          {({ values, isSubmitting, errors }) => (
-            <Form id="login-form">
-              <MyTextField
-                margin="normal"
-                variant="filled"
-                style={{ color: "white" }}
-                name="email"
-                type="input"
-                label="Почта"
-                inputProps={formStyle}
-                InputLabelProps={{
-                  style: { color: "#fff" },
-                }}
-              />
-              <MyTextField
-                color="white"
-                variant="filled"
-                margin="normal"
-                name="password"
-                type="password"
-                label="Пароль"
-                inputProps={formStyle}
-                InputLabelProps={{
-                  style: { color: "#fff" },
-                }}
-              />
-              <p className="loginError">{loginError}</p>
+              });
+            }}
+          >
+            {({ values, isSubmitting, errors }) => (
+              <Form id="login-form">
+                <MyTextField
+                  margin="normal"
+                  variant="filled"
+                  label={"Почта"}
+                  name="email"
+                  type="input"
+                  inputProps={formStyle}
+                  InputLabelProps={{
+                    style: { color: "#fff" },
+                  }}
+                />
+                <MyTextField
+                  margin="normal"
+                  variant="filled"
+                  name="password"
+                  type="password"
+                  label={"Пароль"}
+                  inputProps={formStyle}
+                  InputLabelProps={{
+                    style: { color: "#fff" },
+                  }}
+                />
+                <p className="loginError">{loginError}</p>
 
-              <div>
-                <Button id="regButton" variant="contained" type="submut">
-                  Войти
-                </Button>
-              </div>
-            </Form>
-          )}
-        </Formik>
-        <Link to="/register" className="registerLink">
-          Зарегестрироваться
-        </Link>
+                <div>
+                  <MyLoadingButton loading={loading}>Войти</MyLoadingButton>
+                </div>
+              </Form>
+            )}
+          </Formik>
+          <Link to="/register" className="registerLink">
+            Зарегестрироваться
+          </Link>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 export { Login, MyTextField, formStyle };

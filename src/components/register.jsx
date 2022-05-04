@@ -1,13 +1,14 @@
-import { Formik, Field, Form, useField, ErrorMessage } from "formik";
-import { TextField, Button } from "@material-ui/core";
+import { Button, TextField } from "@mui/material";
+import { Form, Formik, useField } from "formik";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import eyeOp from "./img/Eye.svg";
-import eyeClosed from "./img/Eye-closed.svg";
-import cross from "./img/Cross.svg";
 import * as yup from "yup";
-import arrow from "./img/Arrow left.svg";
-import axios from "axios";
+import eyeClosed from "./img/Eye-closed.svg";
+import eyeOp from "./img/Eye.svg";
+import AuthContext from "../context/AuthContext.jsx";
+import { useContext } from "react";
+import MyLoadingButton from "./MyLoadingButton";
+
 const formStyle = {
   style: { color: "white", width: "250px" },
   autoComplete: "off",
@@ -20,7 +21,6 @@ const registerShema = yup.object({
     .email("Неправильный  формат почты")
     .required("Введите свою почту"),
   name: yup.string().required("Введите своё имя"),
-  surname: yup.string().required("Введите свою фамилию"),
   password: yup
     .string()
     .required("Введите пароль")
@@ -48,43 +48,30 @@ const MyTextField = (props) => {
 const Register = () => {
   const [path, setPath] = useState("");
   const [eye, setEye] = useState(false);
+  const { registerUser } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [registerError, setRegisterError] = useState("");
+
   return (
     <div id="login-wrapper">
       <div id="register-container">
         <h1>Регистрация</h1>
-
+        <p style={{ color: "#f44336", fontSize: "12px" }}>{registerError}</p>
         <Formik
           id="register-form"
           initialValues={{
             name: "",
-            surname: "",
             email: "",
             password: "",
-            photo: "",
-            path: "",
           }}
           validationSchema={registerShema}
           onSubmit={(data) => {
-            async function f(data) {
-              try {
-                const email = data.email;
-                const password = data.password;
-                let response = await fetch(
-                  "http://localhost:8080/auth/register",
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json;charset=utf-8",
-                    },
-                    body: JSON.stringify({ email, password }),
-                  }
-                );
-                console.log(JSON.stringify(response));
-              } catch (err) {
-                console.log(err);
-              }
-            }
-            f(data);
+            setRegisterError(false);
+            setLoading(true);
+            registerUser(data).catch((err) => {
+              setLoading(false);
+              setRegisterError("Этот email уже был использован");
+            });
           }}
         >
           {({ values, isSubmitting, errors }) => (
@@ -92,23 +79,9 @@ const Register = () => {
               <MyTextField
                 margin="normal"
                 variant="filled"
-                style={{ color: "white" }}
                 name="name"
                 type="input"
-                label="Имя"
-                inputProps={formStyle}
-                InputLabelProps={{
-                  style: { color: "#fff" },
-                }}
-              />
-
-              <MyTextField
-                margin="normal"
-                variant="filled"
-                style={{ color: "white" }}
-                name="surname"
-                type="input"
-                label="Фамилия"
+                label={"Имя"}
                 inputProps={formStyle}
                 InputLabelProps={{
                   style: { color: "#fff" },
@@ -121,7 +94,7 @@ const Register = () => {
                 style={{ color: "white" }}
                 name="email"
                 type="input"
-                label="Почта"
+                label={"Почта"}
                 inputProps={formStyle}
                 InputLabelProps={{
                   style: { color: "#fff" },
@@ -129,12 +102,12 @@ const Register = () => {
               />
               <div className="eyeButtnCont">
                 <MyTextField
-                  color="white"
-                  variant="filled"
                   margin="normal"
+                  variant="filled"
+                  style={{ color: "white" }}
                   name="password"
                   type={eye ? "input" : "password"}
-                  label="Пароль"
+                  label={"Пароль"}
                   inputProps={formStyle}
                   InputLabelProps={{
                     style: { color: "#fff" },
@@ -148,52 +121,9 @@ const Register = () => {
                   }}
                 />
               </div>
-              <div>
-                <Button variant="contained" component="label" id="photo-button">
-                  Загрузить фото
-                  <input
-                    type="file"
-                    name="photo"
-                    hidden
-                    accept="image/*"
-                    onChange={(event) => {
-                      const reader = new FileReader();
-                      const files = event.target.files[0];
-                      values.photo = files;
-                      reader.readAsDataURL(files);
-                      event.target.value = "";
-                      reader.onload = function (event) {
-                        values.path = event.target.result;
-                        setPath(event.target.result);
-                      };
-                    }}
-                  />
-                </Button>
-              </div>
-              {values.path ? (
-                <div id="prewatchPhoto">
-                  <img
-                    id="reg-photo"
-                    src={values.path}
-                    width="50px"
-                    height="50px"
-                  />
-                  <button
-                    id="delete-icon"
-                    onClick={() => {
-                      values.path = "";
-                      setPath("");
-                    }}
-                  >
-                    <img src={cross} id="del-prewatch" />
-                  </button>
-                </div>
-              ) : null}
-              <div>
-                <Button id="regButton" variant="contained" type="submut">
-                  Зарегестрироваться
-                </Button>
-              </div>
+              <MyLoadingButton loading={loading}>
+                Зарегестрироваться
+              </MyLoadingButton>
             </Form>
           )}
         </Formik>

@@ -1,0 +1,15 @@
+.root {
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  cursor: pointer;
+  width: 100%;
+  &:hover {
+    background-color: rgba(121, 128, 134, 0.3);
+  }
+  text-align: left;
+  padding-left: 10px;
+}

@@ -40,12 +40,15 @@
   color: white;
   border: 1px solid $additionalHeaderHEX;
 }
-#regButton {
+#regButton,
+#logButton {
   margin-top: 30px;
   margin-bottom: 30px;
   background-color: #519872;
   color: white;
+  /* width: 84.4px; */
 }
+
 #reg-photo {
   margin-top: 15px;
   border-radius: 100px;
