@@ -5,10 +5,12 @@ function MyLoadingButton({
   classNames,
   loading,
   variant = "contained",
+  ...props
 }) {
   return (
     <LoadingButton
       variant={variant}
+      {...props}
       type="submit"
       sx={{
         marginTop: "30px",
@@ -21,8 +23,9 @@ function MyLoadingButton({
           color: "white",
         },
         "&:disabled": {
-          backgroundColor: "#519872",
-          color: "transparent",
+          backgroundColor: "transparent",
+          color: "rgba(255, 255, 255, 0.1)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
         },
         ".MuiLoadingButton-loadingIndicator": {
           color: "white",

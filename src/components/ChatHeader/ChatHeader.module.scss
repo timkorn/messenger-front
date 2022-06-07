@@ -1,0 +1,51 @@
+.search {
+  margin-right: 10px;
+}
+
+.callButton {
+  height: 23px;
+  padding: 0 10px;
+  border-radius: 30px;
+  font-size: 12px;
+  background-color: rgba(81, 152, 114, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 15px;
+}
+
+.dot {
+  background-color: rgb(220, 52, 52);
+  margin-left: 15px;
+  width: 7px;
+  height: 7px;
+  border-radius: 100px;
+}
+.blink {
+  animation-name: blinker;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(1, 0, 0, 1);
+  animation-duration: 2s;
+  -webkit-animation-name: blinker;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: cubic-bezier(1, 0, 0, 1);
+  -webkit-animation-duration: 2s;
+}
+@keyframes blinker {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes blinker {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,35 @@
+.settings {
+  width: 595px;
+  height: 565px;
+}
+/* #232529 */
+.settPhoto {
+  border-radius: 100px;
+  margin-right: 15px;
+}
+.button.button {
+  font-size: 10px;
+  color: white;
+  border: 1px solid white;
+}
+.photoChoice {
+  display: flex;
+  align-items: center;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+.photoChoice p {
+  margin-bottom: 20px;
+}
+.passwField {
+  display: flex;
+  flex-direction: column;
+}
+.passwField div {
+  width: min-content;
+}
+.textForm {
+  /* border: 1px solid rgba(142, 146, 151, 0.6);
+  padding: 15px 15px 45px 45px; */
+}

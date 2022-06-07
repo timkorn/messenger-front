@@ -1,0 +1,19 @@
+.root {
+  margin-right: 5px;
+  height: calc(100vh - 155px);
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* padding-right: 10px; */
+  & > :first-child {
+    margin-top: auto !important;
+  }
+  &.pin {
+    height: calc(100vh - 205px);
+    margin-top: 50px;
+    &.reply {
+      height: calc(100vh - 257px);
+    }
+  }
+}

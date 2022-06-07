@@ -12,4 +12,11 @@
   }
   text-align: left;
   padding-left: 10px;
+  &.im {
+    display: flex;
+    align-items: center;
+    img {
+      margin-right: 10px;
+    }
+  }
 }

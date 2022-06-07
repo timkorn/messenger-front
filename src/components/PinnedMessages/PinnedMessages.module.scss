@@ -1,0 +1,60 @@
+.all {
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  height: 50px;
+  background-color: #232529;
+  z-index: 100;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(142, 146, 151, 0.3);
+}
+.root {
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.content {
+  display: flex;
+  margin-left: 15px;
+  width: 80%;
+}
+.text {
+  margin-left: 15px;
+  flex-grow: 1;
+  width: max-content;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  & > :first-child {
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+}
+
+.message {
+  font-size: 11px;
+  width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.close {
+  margin-right: 15px;
+  img {
+    filter: brightness(0) saturate(100%) invert(55%) sepia(0%) saturate(0%)
+      hue-rotate(295deg) brightness(91%) contrast(90%);
+    height: 30px;
+    width: 30px;
+    &:hover {
+      filter: brightness(0) saturate(100%) invert(90%) sepia(100%) saturate(0%)
+        hue-rotate(235deg) brightness(115%) contrast(101%);
+    }
+  }
+}
+.newButtons {
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+}

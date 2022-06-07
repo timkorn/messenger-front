@@ -1,26 +1,32 @@
-import { Button, Modal, Popover } from "@mui/material";
+import { Button, Dialog, Popover } from "@mui/material";
 import { Form, Formik } from "formik";
-import { useContext, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import * as yup from "yup";
 import AuthContext from "../../context/AuthContext";
 import cross from "../img/Cross.svg";
 import plus from "../img/Plus.svg";
 import LineDivision from "../LineDivision";
-import { formStyle, MyTextField } from "../login.jsx";
+import { MyTextField } from "../MyTextField/MyTextField.js";
 import MyButton from "../MyButton";
 import MyTextButton from "../MyTextButton";
-import Settings from "../modals/settings";
+import Settings from "../dialogs/settings";
 import arrow from "./img/arrow.svg";
-import chosen from "./img/chosen.svg";
 import CommentSidebar from "./img/Comment.svg";
 import feedPic from "./img/feed.svg";
 import groupCh from "./img/Group.svg";
 import logout from "./img/Logout.svg";
 import teamLogo from "./img/messengLogo.jpg";
-import CreateTeam from "../modals/CreateTeam";
-const channelShema = yup.object({
-  name: yup.string().required("Введите своё имя"),
+import CreateTeam from "../dialogs/CreateTeam";
+import Notif from "../img/Notification.svg";
+import s from "./sidebar.module.scss";
+import CreateChannel from "../dialogs/CreateChannel";
+import TeamContext from "../../context/TeamContext";
+import ShowTeamsItem from "../ShowTeamsItem";
+import Plus from "../img/Plus.svg";
+import AddPerson from "../dialogs/AddPerson";
+/* const channelShema = yup.object({
+  name: yup.string().required("Введите имя"),
 
   oldPassword: yup
     .string()
@@ -32,18 +38,18 @@ const channelShema = yup.object({
     .min(6, "Введите больше 6 символов")
     .max(20, "Введите не больше 20 символов")
     .matches(/^[A-Za-z0-9]+$/, "Формат: 1-9 и Aa-Zz"),
-});
-
-formStyle.style.width = "350px";
-/* formStyle.style.padding = "0 20px 0 0"; */
+}); */
 
 function Sidebar() {
   let { user } = useContext(AuthContext);
   let { logoutUser } = useContext(AuthContext);
+  const [openAdd, setOpenAdd] = useState(false);
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
+  const { teams, showTeams, sendTeam } = useContext(TeamContext);
   const handleCreateOpen = () => {
     setOpenCreate(true);
+    setAnchorEl(null);
   };
   const handleCreateClose = () => {
     setOpenCreate(false);
@@ -54,18 +60,11 @@ function Sidebar() {
   const handleClose = () => {
     setOpen(false);
   };
-  const [teams, setTeams] = useState([]);
   const handlePopover = async (event) => {
-    /* let response = await fetch("http://localhost:8080/api/teams/show", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("authTokens"),
-      },
-    });
-    let result = await response.json();
-    setTeams(result); */
     setAnchorEl(event.currentTarget.firstChild);
+    showTeams().catch((err) => {
+      console.log(err);
+    });
   };
   const handleClosePopover = () => {
     setAnchorEl(null);
@@ -73,9 +72,16 @@ function Sidebar() {
   const [openSettings, setOpenSettings] = useState(false);
   const handleOpenSettings = () => {
     setOpenSettings(true);
+    setAnchorEl(null);
   };
   const handleCloseSettings = () => {
     setOpenSettings(false);
+  };
+  const handleOpenAdd = () => {
+    setOpenAdd(true);
+  };
+  const handleAddClose = () => {
+    setOpenAdd(false);
   };
   const [anchorEl, setAnchorEl] = useState(null);
   const teamsChoiceState = Boolean(anchorEl);
@@ -87,12 +93,23 @@ function Sidebar() {
             <div id="sidebar_header_team">
               <img id="tLogo" src={teamLogo} alt="Фото команды" />
               <div>Курсач</div>
-              <MyButton
-                src={arrow}
-                className="sidebar_arrow"
-                alt="Выбор команды"
-                handleClick={handlePopover}
-              />
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <MyButton
+                  src={arrow}
+                  className="sidebar_arrow"
+                  alt="Выбор команды"
+                  handleClick={handlePopover}
+                />
+                <MyButton
+                  src={Notif}
+                  className={s.notif}
+                  style={{
+                    position: "absolute",
+                    top: "27px",
+                    right: "15px",
+                  }}
+                />
+              </div>
               <Popover
                 open={teamsChoiceState}
                 anchorEl={anchorEl}
@@ -110,74 +127,52 @@ function Sidebar() {
               >
                 <div className="popover team-popover">
                   <div className="team-popover-personal">
-                    <p>{user.email}</p>
+                    <p>{user.sub}</p>
                     <MyButton src={logout} handleClick={logoutUser} />
                   </div>
-                  <LineDivision style={{ margin: "7px 0", width: "220px" }} />
+                  <LineDivision
+                    style={{
+                      marginLeft: "-10px",
+                      width: "213px",
+                      marginBottom: "10px",
+                    }}
+                  />
                   <div className="team-popover-choice">
-                    <Link to="/" className="sidebar_choice">
-                      <div className="team-popover-choice-container">
-                        <div>
-                          <p>Курсач</p>
-                        </div>
-                        <img src={chosen} />
-                      </div>
-                    </Link>
-                    <Link to="/" className="sidebar_choice">
-                      <div className="team-popover-choice-container">
-                        <div>
-                          <p>Курсач</p>
-                        </div>
-                        <img src={chosen} />
-                      </div>
-                    </Link>
-                    <Link to="/" className="sidebar_choice">
-                      <div className="team-popover-choice-container">
-                        <div>
-                          <p>Курсач</p>
-                        </div>
-                        <img src={chosen} />
-                      </div>
-                    </Link>
+                    {teams &&
+                      teams.id.map((item, index) => (
+                        <ShowTeamsItem
+                          id={item}
+                          name={teams.name[index]}
+                          key={item}
+                          onClick={handleClosePopover}
+                        />
+                      ))}
                   </div>
                   <LineDivision
-                    margin="-15px"
-                    style={{ margin: "7px -15px" }}
+                    style={{
+                      marginLeft: "-10px",
+                      width: "213px",
+                      marginBottom: "10px",
+                      marginTop: "10px",
+                    }}
                   />
                   <MyTextButton handleClick={handleCreateOpen}>
                     Создать команду
                   </MyTextButton>
-                  <CreateTeam
-                    open={openCreate}
-                    handleClose={handleCreateClose}
-                  />
 
                   <MyTextButton handleClick={handleOpenSettings}>
                     Настройки аккаунта
                   </MyTextButton>
-                  <Settings
-                    open={openSettings}
-                    handleClose={handleCloseSettings}
-                  />
                 </div>
               </Popover>
+              <CreateTeam open={openCreate} handleClose={handleCreateClose} />
+              <Settings open={openSettings} handleClose={handleCloseSettings} />
             </div>
           </div>
           <div id="sidebar_main">
             <div id="sidebar_main_default">
               <NavLink
-                to="/chat"
-                className={({ isActive }) =>
-                  isActive ? "sidebar_choice activeSidebar" : "sidebar_choice"
-                }
-              >
-                <div className="sidebar_main_topics">
-                  <img src={feedPic} class="sidebar_icon" />
-                  <div>Лента</div>
-                </div>
-              </NavLink>
-              <NavLink
-                to="/chat"
+                to="/chat/start"
                 className={({ isActive }) =>
                   isActive ? "sidebar_choice activeSidebar" : "sidebar_choice"
                 }
@@ -188,7 +183,7 @@ function Sidebar() {
                 </div>
               </NavLink>
               <NavLink
-                to="/chat"
+                to="/groupchat/start"
                 className={({ isActive }) =>
                   isActive ? "sidebar_choice activeSidebar" : "sidebar_choice"
                 }
@@ -204,84 +199,20 @@ function Sidebar() {
                   src={plus}
                   alt="добавить канал"
                   handleClick={handleOpen}
+                  className={s.plus}
                 />
-                <Modal
-                  onClose={handleClose}
-                  className="modal-central"
-                  open={open}
-                  aria-labelledby="child-modal-title"
-                  aria-describedby="child-modal-description"
-                >
-                  <div id="create-channel">
-                    <MyButton
-                      src={cross}
-                      alt="закрыть"
-                      className="closeModal"
-                      handleClick={handleClose}
-                    />
-                    <h3>Создание канала</h3>
-                    <Formik
-                      initialValues={{
-                        name: "",
-                        description: "",
-                      }}
-                      validationSchema={channelShema}
-                      onSubmit={(data) => {
-                        console.log(data);
-                      }}
-                    >
-                      {({ values, isSubmitting, errors }) => (
-                        <Form id="create-channel-form">
-                          <p>Придумайте название</p>
-                          <MyTextField
-                            variant="outlined"
-                            style={{ color: "white" }}
-                            name="name"
-                            type="input"
-                            inputProps={formStyle}
-                            InputLabelProps={{
-                              style: { color: "#fff" },
-                            }}
-                            placeholder="название"
-                          />
-                          <p>Добавьте описание</p>
-                          <MyTextField
-                            rows={4}
-                            variant="outlined"
-                            color="white"
-                            name="description"
-                            type="input"
-                            multiline
-                            inputProps={{
-                              ...formStyle,
-                              ...{
-                                style: {
-                                  ...formStyle.style,
-                                  padding: "0 20px 0 0",
-                                },
-                              },
-                            }}
-                            InputLabelProps={{
-                              style: { color: "#fff" },
-                            }}
-                            placeholder="описание"
-                          />
-
-                          <Button
-                            id="create-chan-button"
-                            variant="contained"
-                            type="submut"
-                          >
-                            Создать канал
-                          </Button>
-                        </Form>
-                      )}
-                    </Formik>
-                  </div>
-                </Modal>
+                <CreateChannel open={open} handleClose={handleClose} />
               </div>
               <div className="sidebar_main_channels ">
                 <div id="channelList"></div>
+                <MyTextButton
+                  handleClick={handleOpenAdd}
+                  image={Plus}
+                  className="addPerson"
+                >
+                  Добавить учатника
+                </MyTextButton>
+                <AddPerson open={openAdd} handleClose={handleAddClose} />
               </div>
             </div>
           </div>

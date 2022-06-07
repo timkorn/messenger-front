@@ -11,6 +11,7 @@
     "@mui/lab": "^5.0.0-alpha.80",
     "@mui/material": "^5.6.4",
     "@mui/styles": "^5.6.2",
+    "@stomp/stompjs": "^6.1.2",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
@@ -28,7 +29,9 @@
     "react-scripts": "5.0.0",
     "react-spinners": "^0.11.0",
     "sass": "^1.50.0",
+    "sockjs-client": "^1.6.1",
     "web-vitals": "^2.1.4",
+    "websocket": "^1.0.34",
     "yup": "^0.32.11"
   },
   "scripts": {

@@ -125,7 +125,16 @@
 
 #channelList {
   overflow-y: scroll;
-  height: calc(100vh - 218px);
+  height: calc(100vh - 235px);
+}
+
+.addPerson {
+  margin-left: -8px;
+  p {
+    color: #8e9297;
+    color: grey;
+    font-size: 13px;
+  }
 }
 .footer_settings {
   margin-left: 15px;
@@ -182,11 +191,11 @@
 
 .closeModal {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5px;
+  right: 5px;
   img {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
   }
 }
 
@@ -204,7 +213,7 @@
   }
 }
 .team-popover {
-  padding: 0 10px;
+  padding: 0 10px 11px 10px;
   width: 190px;
 }
 

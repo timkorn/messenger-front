@@ -1,5 +1,5 @@
-import { Button, TextField } from "@mui/material";
-import { Form, Formik, useField } from "formik";
+import { Button } from "@mui/material";
+import { Form, Formik } from "formik";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
@@ -8,6 +8,7 @@ import eyeOp from "./img/Eye.svg";
 import AuthContext from "../context/AuthContext.jsx";
 import { useContext } from "react";
 import MyLoadingButton from "./MyLoadingButton";
+import { MyTextField } from "./MyTextField/MyTextField.js";
 
 const formStyle = {
   style: { color: "white", width: "250px" },
@@ -28,22 +29,6 @@ const registerShema = yup.object({
     .max(20, "Введите не больше 20 символов")
     .matches(/^[A-Za-z0-9]+$/, "Формат: 1-9 и Aa-Zz"),
 });
-
-const MyTextField = (props) => {
-  const [field, meta, helpers] = useField(props.name);
-  const errorText = meta.error && meta.touched ? meta.error : "";
-  return (
-    <TextField
-      {...props}
-      {...field}
-      FormHelperTextProps={{
-        style: { position: "absolute", bottom: "-20px" },
-      }}
-      helperText={errorText}
-      error={!!errorText}
-    />
-  );
-};
 
 const Register = () => {
   const [path, setPath] = useState("");

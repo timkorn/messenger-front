@@ -1,9 +1,9 @@
 import { Formik, Field, Form, useField, ErrorMessage } from "formik";
-import { TextField, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
-import { withStyles } from "@mui/styles";
+import { MyTextField, formStyle } from "./MyTextField/MyTextField.js";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext.jsx";
 import MyLoadingButton from "./MyLoadingButton";
@@ -18,11 +18,6 @@ function ErrorFallback({ error, resetErrorBoundary }) {
     </div>
   );
 }
-const formStyle = {
-  style: { color: "white", width: "250px" },
-  autoComplete: "off",
-  color: "white",
-};
 
 const loginShema = yup.object({
   email: yup
@@ -30,42 +25,6 @@ const loginShema = yup.object({
     .email("Неправильный  формат почты")
     .required("Введите свою почту"),
   password: yup.string().required("Введите пароль"),
-});
-const styles = {
-  root: {
-    "& .MuiOutlinedInput-root": {
-      "&:hover fieldset": {
-        borderColor: "white",
-      },
-      "& fieldset": {
-        borderColor: "grey",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "grey",
-      },
-    },
-    "& .MuiFilledInput-root": {
-      "& .MuiInput-underline:after": {
-        borderBottomColor: "green",
-      },
-    },
-  },
-};
-const MyTextField = withStyles(styles)(function (props) {
-  const [field, meta, helpers] = useField(props.name);
-  const errorText = meta.error && meta.touched ? meta.error : "";
-  return (
-    <TextField
-      value={props.children}
-      {...props}
-      {...field}
-      FormHelperTextProps={{
-        style: { position: "absolute", bottom: "-20px" },
-      }}
-      helperText={errorText}
-      error={!!errorText}
-    />
-  );
 });
 
 const Login = () => {
