@@ -205,7 +205,6 @@ function ChannelTitle({ children }) {
     <div id="channel__header-title">
       <img src={hashtag} alt="hash" id="channel__header-img" />
       <h2>{children}</h2>
-      <span id="channel__header-description">chill and relax</span>
     </div>
   );
 }

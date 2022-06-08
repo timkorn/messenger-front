@@ -59,34 +59,43 @@ export const ChatProvider = ({ children }) => {
   const [text, setText] = useState("");
   const [contacts, setContacts] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [chatLoad, setChatLoad] = useState(true);
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { chatid } = useParams();
   useEffect(() => {
-    if (id === undefined) {
+    if (chatid === undefined) {
       navigate("/");
     }
-    findChatMessages(id, user.id).then((msgs) => setMessages(msgs));
-    /* loadContacts(); 
-  }, [id]);
+    findChatMessages(chatid).then((msgs) => {
+      setMessages(msgs);
+      setChatLoad(false);
+      console.log(msgs);
+    });
+    return () => {
+      setChatLoad(true);
+    };
+    /* loadContacts(); */
+  }, [chatid]);
 
   useEffect(() => {
-    /* if (localStorage.getItem("accessToken") === null) {
-      navigate("/login");
-    } */
     connect();
+    findChatMessages(chatid).then((msgs) => {
+      setMessages(msgs);
+      setChatLoad(false);
+      console.log(msgs);
+    });
     /* loadContacts(); */
   }, []);
   const connect = () => {
     var sockJS = new SockJS("http://localhost:8080/ws");
     stompClient = Stomp.over(sockJS);
-    stompClient.connect(user, onConnected, onError);
+    stompClient.connect({ id: user.id }, onConnected, onError);
   };
 
   const onConnected = () => {
     console.log("connected");
-    console.log(user);
     stompClient.subscribe(
-      "/user/" + user.id + "/queue/messages",
+      "/user/" + chatid + "/queue/messages",
       onMessageReceived
     );
   };
@@ -96,12 +105,12 @@ export const ChatProvider = ({ children }) => {
   };
 
   const onMessageReceived = (msg) => {
-    const notification = JSON.parse(msg.body);
-    const active = JSON.parse(
-      sessionStorage.getItem("recoil-persist")
-    ).chatActiveContact;
-
-    if (active.id === notification.senderId) {
+    const mess = JSON.parse(msg.body);
+    console.log(messages);
+    const newMessages = [...messages, mess];
+    console.log(newMessages);
+    setMessages(newMessages);
+    /* if (active.id === notification.senderId) {
       findChatMessage(notification.id).then((message) => {
         const newMessages = JSON.parse(
           sessionStorage.getItem("recoil-persist")
@@ -110,24 +119,20 @@ export const ChatProvider = ({ children }) => {
         setMessages(newMessages);
       });
     } else {
-      /*  message.info("Received a new message from " + notification.senderName); */
-    }
+        message.info("Received a new message from " + notification.senderName); 
+    } */
     loadContacts();
   };
 
   const sendMessage = (msg) => {
     if (msg.trim() !== "") {
       const message = {
-        user: { id: user.id },
-        chat_id: id,
+        userId: user.id,
+        chat_id: Number(chatid),
         text: msg,
         time: new Date(),
       };
       stompClient.send("/app/chat", {}, JSON.stringify(message));
-
-      const newMessages = [...messages];
-      newMessages.push(message);
-      setMessages(newMessages);
     }
   };
 
@@ -141,14 +146,14 @@ export const ChatProvider = ({ children }) => {
       )
     );
 
-    promise.then((promises) =>
+    /*  promise.then((promises) =>
       Promise.all(promises).then((users) => {
         setContacts(users);
-        /* if (activeContact === undefined && users.length > 0) {
+         if (activeContact === undefined && users.length > 0) {
           setActiveContact(users[0]);
-        } */
+        }
       })
-    );
+    );  */
   };
   let contextData = {
     createReply,
@@ -165,6 +170,9 @@ export const ChatProvider = ({ children }) => {
     typeAddMesField,
     redMessage,
     sendMessage,
+    messages,
+    chatLoad,
+    chatid,
   };
   return (
     <ChatContext.Provider value={contextData}>{children}</ChatContext.Provider>

@@ -4,9 +4,17 @@ import search from "../img/search.svg";
 import isnew from "../img/new.svg";
 import MyButton from "../MyButton";
 import LineDivision from "../LineDivision";
+import CreateChat from "../dialogs/CreateChat/CreateChat.js";
 function Conversations() {
   const [isLoading, setLoading] = useState(true);
   const [chats, setChats] = useState([]);
+  const [openCreate, setOpenCreate] = useState(false);
+  const handleOpenCreateChat = () => {
+    setOpenCreate(true);
+  };
+  const handleCreateClose = () => {
+    setOpenCreate(false);
+  };
   useEffect(() => {
     async function fetchData() {
       const url = "https://api.randomuser.me/?results=5";
@@ -23,8 +31,9 @@ function Conversations() {
       <header className="chats-list__header">
         <h4>Сообщения</h4>
         <div className="chats-list__header-imgs">
-          <MyButton src={search} alt="Поиск" />
-          <MyButton src={isnew} alt="Добавить" />
+          {/* <MyButton src={search} alt="Поиск" /> */}
+          <MyButton src={isnew} alt="Добавить" onClick={handleOpenCreateChat} />
+          <CreateChat handleClose={handleCreateClose} open={openCreate} />
         </div>
       </header>
       <LineDivision

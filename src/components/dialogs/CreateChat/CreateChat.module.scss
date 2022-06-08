@@ -1,0 +1,14 @@
+.list {
+  position: absolute;
+  min-height: 40px;
+  max-height: 200px;
+  width: 400px;
+  background-color: white;
+  overflow-y: scroll;
+  border-radius: 20px;
+  top: 110px;
+}
+
+.hidden {
+  display: none;
+}

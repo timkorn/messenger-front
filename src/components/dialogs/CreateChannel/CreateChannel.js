@@ -7,31 +7,36 @@ import * as yup from "yup";
 import cross from "../../img/Cross.svg";
 import cn from "classnames";
 import { MyTextField } from "../../login.jsx";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MyLoadingButton from "../../MyLoadingButton";
+import AuthContext from "../../../context/AuthContext";
+import { useNavigate, useParams } from "react-router-dom";
+import TeamContext from "../../../context/TeamContext";
 
 const formStyle = {
   style: { color: "white", width: "250px", padding: "10px 10px" },
   autoComplete: "off",
 };
 const channelShema = yup.object({
-  name: yup.string().required("Введите имя"),
-
-  description: yup
+  name: yup
     .string()
-    .required("поле не заполнено")
-    .max(220, "превышен лимит символов(220)"),
+    .required("Введите имя")
+    .max(15, "Введите не больше 15 символов"),
 });
-function CreateChannel({ handleClose, open }) {
-  const [loading, setLoading] = useState(false);
+function CreateChannel({ handleClose, open, id }) {
+  const [load, setLoad] = useState(false);
+  const { authTokens, logout } = useContext(AuthContext);
+  const [createChannelError, setCreateChannelError] = useState("");
+  const { showChannels } = useContext(TeamContext);
+  useEffect(() => {
+    if (!open) {
+      if (createChannelError) {
+        setCreateChannelError("");
+      }
+    }
+  }, [open]);
   return (
-    <Dialog
-      onClose={handleClose}
-      className="modal-central"
-      open={open}
-      /* aria-labelledby="child-modal-title"
-        aria-describedby="child-modal-description" */
-    >
+    <Dialog onClose={handleClose} className="modal-central" open={open}>
       <div className={cn(common.modal)} style={{ width: "500px" }}>
         <MyButton
           src={cross}
@@ -40,39 +45,56 @@ function CreateChannel({ handleClose, open }) {
           handleClick={handleClose}
         />
         <h3>Создание канала</h3>
+        {createChannelError && (
+          <p className="loginError" style={{ top: "40px" }}>
+            {createChannelError}
+          </p>
+        )}
         <Formik
           initialValues={{
             name: "",
-            description: "",
           }}
           validationSchema={channelShema}
           onSubmit={(data) => {
-            setLoading(true);
-            async function createChannel(data) {
+            setLoad(true);
+            setCreateChannelError("");
+
+            async function createChannelInTeam(data) {
               let name = data.name;
-              let id = 0;
-              let description = data.description;
+
               let response = await fetch(
-                "http://localhost:8080/channels/create",
+                "http://localhost:8080/chat/createChannel",
                 {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
+                    Authorization: String(authTokens.accessToken),
                   },
-                  body: JSON.stringify({ name, id, description }),
+                  body: JSON.stringify({ name, team_id: id }),
                 }
               );
+              if (response.status === 200) {
+                setLoad(false);
+                handleClose();
+                showChannels();
+              } else {
+                let result = await response.json();
+                if (result.error === "Unauthorized") {
+                  logout();
+                }
+                throw new Error();
+              }
             }
+            createChannelInTeam(data).catch((err) => {
+              setLoad(false);
+              setCreateChannelError("Канал с таким названием уже существует");
+            });
           }}
         >
           {({ values, isSubmitting, errors }) => (
             <Form id="create-channel-form">
               <p>Придумайте название</p>
-              {/* <MyTextField
-                  variant="outlined"
-                  name="name"
-                  inputProps={formStyle}
-                /> */}
+
               <MyTextField
                 variant="outlined"
                 style={{ color: "white" }}
@@ -84,37 +106,12 @@ function CreateChannel({ handleClose, open }) {
                 }}
                 placeholder="название"
               />
-              <p style={{ marginTop: "30px" }}>Добавьте описание</p>
-              {/* <MyTextField
-                  variant="outlined"
-                  name="description"
-                  inputProps={formStyle}
-                /> */}
-              <MyTextField
-                rows={4}
-                variant="outlined"
-                name="description"
-                type="input"
-                multiline
-                inputProps={{
-                  ...formStyle,
-                  ...{
-                    style: {
-                      ...formStyle.style,
-                      width: "100%",
-                      padding: "0 20px 0 0",
-                    },
-                  },
-                }}
-                InputLabelProps={{
-                  style: { color: "#fff" },
-                }}
-                placeholder="описание"
-              />
+
               <MyLoadingButton
                 variant="contained"
                 type="submut"
-                loading={loading}
+                classNames={{ alignSelf: "center" }}
+                loading={load}
               >
                 Создать канал
               </MyLoadingButton>
