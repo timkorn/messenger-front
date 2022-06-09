@@ -210,7 +210,7 @@ function Sidebar() {
                   image={Plus}
                   className="addPerson"
                 >
-                  Добавить учатника
+                  Добавить участника
                 </MyTextButton>
                 <AddPerson open={openAdd} handleClose={handleAddClose} />
               </div>
