@@ -19,7 +19,7 @@ const formStyle = {
 const registerShema = yup.object({
   email: yup
     .string()
-    .email("Неправильный  формат почты")
+    .email("Неправильный формат почты")
     .required("Введите свою почту"),
   name: yup.string().required("Введите своё имя"),
   password: yup
@@ -107,7 +107,7 @@ const Register = () => {
                 />
               </div>
               <MyLoadingButton loading={loading}>
-                Зарегестрироваться
+                Зарегистрироваться
               </MyLoadingButton>
             </Form>
           )}

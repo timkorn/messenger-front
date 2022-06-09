@@ -22,7 +22,7 @@ function ErrorFallback({ error, resetErrorBoundary }) {
 const loginShema = yup.object({
   email: yup
     .string()
-    .email("Неправильный  формат почты")
+    .email("Неправильный формат почты")
     .required("Введите свою почту"),
   password: yup.string().required("Введите пароль"),
 });
@@ -87,7 +87,7 @@ const Login = () => {
             )}
           </Formik>
           <Link to="/register" className="registerLink">
-            Зарегестрироваться
+            Зарегистрироваться
           </Link>
         </div>
       </div>
