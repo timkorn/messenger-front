@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import UniversalLoader from "../common/loader.jsx";
 import search from "../img/search.svg";
 import isnew from "../img/new.svg";
 import MyButton from "../MyButton";
 import LineDivision from "../LineDivision";
 import CreateChat from "../dialogs/CreateChat/CreateChat.js";
-function Conversations() {
+import ChatContext from "../../context/ChatContext.jsx";
+function Conversations({ type }) {
   const [isLoading, setLoading] = useState(true);
-  const [chats, setChats] = useState([]);
   const [openCreate, setOpenCreate] = useState(false);
+  const [conversationLoad, setConversationLoad] = useState(true);
+  const { showChats, chats } = useContext(ChatContext);
   const handleOpenCreateChat = () => {
     setOpenCreate(true);
   };
@@ -16,15 +18,17 @@ function Conversations() {
     setOpenCreate(false);
   };
   useEffect(() => {
-    async function fetchData() {
-      const url = "https://api.randomuser.me/?results=5";
-      const response = await fetch(url);
-      const data = await response.json();
-      setChats(data.results);
-      setLoading(false);
+    if (type === "chat") {
+      showChats("PERSONAL").then(setConversationLoad(false));
+    } else {
+      showChats("GROUP").then(() => {
+        setConversationLoad(false);
+      });
     }
-    fetchData();
-  }, []);
+    return () => {
+      setConversationLoad(true);
+    };
+  }, [type]);
 
   return (
     <div className="chats-list">
@@ -33,7 +37,11 @@ function Conversations() {
         <div className="chats-list__header-imgs">
           {/* <MyButton src={search} alt="Поиск" /> */}
           <MyButton src={isnew} alt="Добавить" onClick={handleOpenCreateChat} />
-          <CreateChat handleClose={handleCreateClose} open={openCreate} />
+          <CreateChat
+            handleClose={handleCreateClose}
+            open={openCreate}
+            type={type}
+          />
         </div>
       </header>
       <LineDivision
@@ -42,16 +50,12 @@ function Conversations() {
         }}
       />
       <main className="chats-list__main">
-        {isLoading || !chats ? (
+        {conversationLoad ? (
           <UniversalLoader size={30} />
         ) : (
           chats.map((item, i) => (
-            <div key={item} className="chats-item">
-              <MessageItem
-                name={item.name.first}
-                pic={item.picture.large}
-                text={i}
-              />
+            <div key={i} className="chats-item">
+              <MessageItem name={item.name} pic={item.ava} text={item.time} />
             </div>
           ))
         )}
@@ -66,10 +70,10 @@ function MessageItem(props) {
       <img className="chats-item__picture" src={props.pic} alt="автар" />
       <div className="chats-item__main">
         <div className="chats-item__main-header">{props.name}</div>
-        <p className="chats-item__main-text">aslfmaslcm;sam;qwelmfc;wef</p>
+        <p className="chats-item__main-text">Hello!!!</p>
       </div>
       <time>
-        <span className="chats-item__time">16:00</span>
+        <span className="chats-item__time">18:00</span>
       </time>
     </div>
   );

@@ -1,14 +1,39 @@
 .list {
   position: absolute;
-  min-height: 40px;
+  min-height: 55px;
   max-height: 200px;
   width: 400px;
-  background-color: white;
+  background-color: #3b3b3c;
   overflow-y: scroll;
-  border-radius: 20px;
+  border-radius: 8px;
   top: 110px;
+  border: 1px;
 }
 
 .hidden {
   display: none;
+}
+.group {
+  top: 237px;
+}
+
+.close {
+  img {
+    width: 19px;
+    height: 19px;
+  }
+}
+.photoChoice {
+  display: flex;
+  align-items: center;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+.photoChoice p {
+  margin-bottom: 20px;
+}
+.settPhoto {
+  border-radius: 100px;
+  margin-right: 15px;
 }

@@ -25,7 +25,7 @@ const channelShema = yup.object({
 });
 function CreateChannel({ handleClose, open, id }) {
   const [load, setLoad] = useState(false);
-  const { authTokens, logout } = useContext(AuthContext);
+  const { authTokens, logoutUser } = useContext(AuthContext);
   const [createChannelError, setCreateChannelError] = useState("");
   const { showChannels } = useContext(TeamContext);
   useEffect(() => {
@@ -80,7 +80,7 @@ function CreateChannel({ handleClose, open, id }) {
               } else {
                 let result = await response.json();
                 if (result.error === "Unauthorized") {
-                  logout();
+                  logoutUser();
                 }
                 throw new Error();
               }

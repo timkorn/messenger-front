@@ -13,6 +13,8 @@ import MyLoadingButton from "../../MyLoadingButton";
 import { LayoutGroupContext } from "framer-motion";
 import AuthContext from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Ava from "../../img/ava.png";
+import { Button } from "@mui/material";
 const formStyle = {
   style: { color: "white", width: "250px", padding: "10px 10px" },
   autoComplete: "off",
@@ -25,7 +27,7 @@ const createTeamShema = yup.object({
     .max(20, "превышен лимит символов(20)"),
 });
 const CreateTeam = ({ handleClose, open }) => {
-  const { logout, authTokens } = useContext(AuthContext);
+  const { logoutUser, authTokens } = useContext(AuthContext);
   const [load, setLoad] = useState(false);
   const [createError, setCreateError] = useState("");
   const navigate = useNavigate();
@@ -61,6 +63,7 @@ const CreateTeam = ({ handleClose, open }) => {
           initialValues={{
             name: "",
             team_participants: "",
+            photo: Ava,
           }}
           validationSchema={createTeamShema}
           onSubmit={(data) => {
@@ -69,13 +72,14 @@ const CreateTeam = ({ handleClose, open }) => {
             async function create(data) {
               const team_participants = data.team_participants;
               const name = data.name;
+              const avatar = data.photo;
               let response = await fetch("http://localhost:8080/teams/create", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                   Authorization: String(authTokens.accessToken),
                 },
-                body: JSON.stringify({ name, team_participants }),
+                body: JSON.stringify({ name, team_participants, avatar }),
               });
               let result = await response.json();
               if (response.status === 200 && result) {
@@ -83,7 +87,7 @@ const CreateTeam = ({ handleClose, open }) => {
                 handleClose();
                 navigate(`/${result.id}`);
               } else if (result.error === "Unauthorized") {
-                logout();
+                logoutUser();
               } else {
                 throw new Error();
               }
@@ -94,8 +98,44 @@ const CreateTeam = ({ handleClose, open }) => {
             });
           }}
         >
-          {({ values, isSubmitting, errors }) => (
+          {({ values, isSubmitting, errors, setFieldValue }) => (
             <Form id="create-channel-form">
+              <div className={s.photoChoice}>
+                <img
+                  className={s.settPhoto}
+                  src={values.photo}
+                  width="85px"
+                  height="85px"
+                  alt="фото профиля"
+                />
+                <div>
+                  <p>Фото профиля</p>
+                  <div>
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      className={s.button}
+                      style={{ fontSize: "10px" }}
+                    >
+                      Загрузить фото
+                      <input
+                        type="file"
+                        name="photo"
+                        hidden
+                        accept="image/*"
+                        onChange={(e) => {
+                          const reader = new FileReader();
+                          const files = e.target.files[0];
+                          reader.readAsDataURL(files);
+                          reader.onload = (event) => {
+                            setFieldValue("photo", event.target.result);
+                          };
+                        }}
+                      />
+                    </Button>
+                  </div>
+                </div>
+              </div>
               <MyTextField
                 margin="normal"
                 variant="outlined"

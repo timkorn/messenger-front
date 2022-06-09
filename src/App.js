@@ -17,17 +17,17 @@ import Data from "./components/Data.jsx";
 function App() {
   return (
     <BrowserRouter>
-      <Data />
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
+          <Route path="/notfound" element={<NotFound />} />
           <Route
             path="/"
             element={
               <PrivateRoute>
                 <TeamProvider>
+                  <Data />
                   <StartChoice />
                 </TeamProvider>
               </PrivateRoute>
@@ -38,6 +38,7 @@ function App() {
             element={
               <PrivateRoute>
                 <TeamProvider>
+                  <Data />
                   <Main />
                 </TeamProvider>
               </PrivateRoute>

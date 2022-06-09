@@ -4,11 +4,11 @@ import MessageField from "./common/messageField.jsx";
 import ChatHeader from "./ChatHeader/ChatHeader.js";
 import { useParams } from "react-router-dom";
 function PersonalChat() {
-  const { id } = useParams();
+  const { chatid } = useParams();
   return (
     <>
-      <Conversations />
-      {id === "start" ? (
+      <Conversations type="chat" />
+      {chatid === "start" ? (
         <div
           style={{
             display: "flex",

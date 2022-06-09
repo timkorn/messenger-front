@@ -1,7 +1,14 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import jwt_decode from "jwt-decode";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import AuthContext from "./AuthContext";
+import Loading from "../components/Loading.jsx";
 import { useParams } from "react-router-dom";
 const TeamContext = createContext();
 export default TeamContext;
@@ -10,11 +17,42 @@ export const TeamProvider = ({ children }) => {
   const { logoutUser, authTokens } = useContext(AuthContext);
   const [currentTeam, setCurrentTeam] = useState(null);
   const [teams, setTeams] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [channels, setChannels] = useState([]);
+  const [teamInfo, setTeamInfo] = useState(null);
+  const navigate = useNavigate();
   const { id } = useParams();
+  async function getTeam() {
+    let response = await fetch("http://localhost:8080/teams/getTeam", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(authTokens.accessToken),
+      },
+      body: JSON.stringify({ id }),
+    });
+    let result = await response.json();
+    if (response.status === 200) {
+      setTeamInfo(result);
+    } else if (result.error === "Unauthorized") {
+      logoutUser();
+    } else {
+      throw new Error();
+    }
+  }
   useEffect(() => {
     if (id) {
-      sendTeam(id);
+      setLoading(true);
+      showTeams().then((result) => {
+        if (!result.id.some((number) => number === Number(id))) {
+          navigate("/notfound");
+        } else {
+          getTeam().then(() => {
+            sendTeam(id);
+            setLoading(false);
+          });
+        }
+      });
     }
   }, [id]);
   const sendTeam = (id) => {
@@ -67,8 +105,17 @@ export const TeamProvider = ({ children }) => {
     currentTeam,
     showChannels,
     channels,
+    teamInfo,
   };
   return (
-    <TeamContext.Provider value={contextData}>{children}</TeamContext.Provider>
+    <>
+      {id && loading ? (
+        <Loading />
+      ) : (
+        <TeamContext.Provider value={contextData}>
+          {children}
+        </TeamContext.Provider>
+      )}
+    </>
   );
 };

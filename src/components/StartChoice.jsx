@@ -22,7 +22,6 @@ function StartChoice() {
   useEffect(() => {
     const f = async () => {
       let result = await showTeams().catch((err) => console.log(err));
-      console.log(result);
       if (localStorage.getItem("team")) {
         if (localStorage.getItem("team") in result.id) {
           navigate(`/${localStorage.getItem("team")}`);

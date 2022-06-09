@@ -49,7 +49,7 @@ function Sidebar() {
   const [openAdd, setOpenAdd] = useState(false);
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
-  const { teams, showTeams, currentTeam, showChannels, channels } =
+  const { teams, showTeams, currentTeam, showChannels, channels, teamInfo } =
     useContext(TeamContext);
   const [loadChannels, setLoadChannels] = useState(true);
   useEffect(() => {
@@ -106,8 +106,8 @@ function Sidebar() {
         <div id="sidebar">
           <div id="sidebar_header">
             <div id="sidebar_header_team">
-              <img id="tLogo" src={teamLogo} alt="Фото команды" />
-              <div>Курсач</div>
+              <img id="tLogo" src={teamInfo.avatar} alt="Фото команды" />
+              <div>{teamInfo.name}</div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <MyButton
                   src={arrow}
@@ -187,7 +187,7 @@ function Sidebar() {
           <div id="sidebar_main">
             <div id="sidebar_main_default">
               <NavLink
-                to="/chat/start"
+                to={`chat/start`}
                 className={({ isActive }) =>
                   isActive ? "sidebar_choice activeSidebar" : "sidebar_choice"
                 }
@@ -198,7 +198,7 @@ function Sidebar() {
                 </div>
               </NavLink>
               <NavLink
-                to="/groupchat/start"
+                to={`groupchat/start`}
                 className={({ isActive }) =>
                   isActive ? "sidebar_choice activeSidebar" : "sidebar_choice"
                 }

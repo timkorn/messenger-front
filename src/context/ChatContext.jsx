@@ -19,6 +19,35 @@ export const ChatProvider = ({ children }) => {
   const [red, setRed] = useState(false);
   const [typeAddMesField, setTypeMesField] = useState(false);
   const [redMessage, setRedMessage] = useState(null);
+  const { user } = useContext(AuthContext);
+  const [text, setText] = useState("");
+  const [contacts, setContacts] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [chatLoad, setChatLoad] = useState(true);
+  const [chats, setChats] = useState([]);
+  const navigate = useNavigate();
+  const { chatid } = useParams();
+  const { authTokens, logoutUser } = useContext(AuthContext);
+  async function showChats(type) {
+    let response = await fetch("http://localhost:8080/chat/showChats", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(authTokens.accessToken),
+      },
+      body: JSON.stringify({ id: user.id, chat_type: type }),
+    });
+    let result = await response.json();
+
+    if (response.status === 200) {
+      setChats(result);
+      return result;
+    } else if (result.error === "Unauthorized") {
+      logoutUser();
+    } else {
+      throw new Error();
+    }
+  }
   const createReply = (name, message) => {
     deleteRed();
     setTypeMesField("reply");
@@ -55,13 +84,7 @@ export const ChatProvider = ({ children }) => {
   const makeNewPin = (id, mesId) => {
     setChatRequest(false);
   };
-  const { user } = useContext(AuthContext);
-  const [text, setText] = useState("");
-  const [contacts, setContacts] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [chatLoad, setChatLoad] = useState(true);
-  const navigate = useNavigate();
-  const { chatid } = useParams();
+
   useEffect(() => {
     if (chatid === undefined) {
       navigate("/");
@@ -173,6 +196,8 @@ export const ChatProvider = ({ children }) => {
     messages,
     chatLoad,
     chatid,
+    showChats,
+    chats,
   };
   return (
     <ChatContext.Provider value={contextData}>{children}</ChatContext.Provider>
