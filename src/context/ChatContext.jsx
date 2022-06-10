@@ -28,6 +28,38 @@ export const ChatProvider = ({ children }) => {
   const navigate = useNavigate();
   const { chatid } = useParams();
   const { authTokens, logoutUser } = useContext(AuthContext);
+  const [searchMessages, setSearchMessages] = useState([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [chatAim, setChatAim] = useState(null);
+  const [searchError, setSearchError] = useState("");
+  useEffect(() => {
+    if (!searchOpen) {
+      setSearchMessages([]);
+    }
+  }, [searchOpen]);
+  const handleMakeSearch = (value) => {
+    let serMess = messages.filter((item) => {
+      if (item.username !== -1 || item.username.text !== -1) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    if (serMess.length === 0) {
+      setSearchError("Нет подходящих сообщений");
+    } else {
+      handleOpenSearch(serMess);
+    }
+  };
+  const handleOpenSearch = (msg) => {
+    setSearchMessages(msg);
+    setSearchOpen(true);
+  };
+  const handleCloseSearch = (id) => {
+    setSearchMessages([]);
+    setSearchOpen(false);
+    setChatAim(id);
+  };
   async function showChats(type) {
     let response = await fetch("http://localhost:8080/chat/showChats", {
       method: "POST",
@@ -38,7 +70,7 @@ export const ChatProvider = ({ children }) => {
       body: JSON.stringify({ id: user.id, chat_type: type }),
     });
     let result = await response.json();
-
+    console.log(result);
     if (response.status === 200) {
       setChats(result);
       return result;
@@ -89,26 +121,29 @@ export const ChatProvider = ({ children }) => {
     if (chatid === undefined) {
       navigate("/");
     }
-    findChatMessages(chatid).then((msgs) => {
-      setMessages(msgs);
-      setChatLoad(false);
-      console.log(msgs);
-    });
+    console.log();
+    if (chatid !== "start") {
+      findChatMessages(chatid).then((msgs) => {
+        setMessages(msgs);
+        setChatLoad(false);
+        console.log(msgs);
+      });
+    }
     return () => {
       setChatLoad(true);
     };
     /* loadContacts(); */
   }, [chatid]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     connect();
     findChatMessages(chatid).then((msgs) => {
       setMessages(msgs);
       setChatLoad(false);
       console.log(msgs);
     });
-    /* loadContacts(); */
-  }, []);
+    /* loadContacts(); 
+  }, []); */
   const connect = () => {
     var sockJS = new SockJS("http://localhost:8080/ws");
     stompClient = Stomp.over(sockJS);
@@ -198,6 +233,15 @@ export const ChatProvider = ({ children }) => {
     chatid,
     showChats,
     chats,
+    chatAim,
+    setChatAim,
+    searchMessages,
+    handleOpenSearch,
+    handleCloseSearch,
+    handleMakeSearch,
+    searchError,
+    setSearchOpen,
+    setSearchError,
   };
   return (
     <ChatContext.Provider value={contextData}>{children}</ChatContext.Provider>

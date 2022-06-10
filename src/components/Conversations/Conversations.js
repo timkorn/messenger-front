@@ -1,16 +1,21 @@
 import React, { useContext, useEffect, useState } from "react";
 import UniversalLoader from "../common/loader.jsx";
-import search from "../img/search.svg";
 import isnew from "../img/new.svg";
 import MyButton from "../MyButton";
 import LineDivision from "../LineDivision";
 import CreateChat from "../dialogs/CreateChat/CreateChat.js";
 import ChatContext from "../../context/ChatContext.jsx";
+import TeamContext from "../../context/TeamContext.jsx";
+import { useNavigate, useMatch } from "react-router-dom";
+import cn from "classnames";
+import s from "./Conversations.module.scss";
+
 function Conversations({ type }) {
   const [isLoading, setLoading] = useState(true);
   const [openCreate, setOpenCreate] = useState(false);
   const [conversationLoad, setConversationLoad] = useState(true);
   const { showChats, chats } = useContext(ChatContext);
+  const { currentTeam } = useContext(TeamContext);
   const handleOpenCreateChat = () => {
     setOpenCreate(true);
   };
@@ -21,9 +26,7 @@ function Conversations({ type }) {
     if (type === "chat") {
       showChats("PERSONAL").then(setConversationLoad(false));
     } else {
-      showChats("GROUP").then(() => {
-        setConversationLoad(false);
-      });
+      showChats("GROUP").then(setConversationLoad(false));
     }
     return () => {
       setConversationLoad(true);
@@ -53,27 +56,43 @@ function Conversations({ type }) {
         {conversationLoad ? (
           <UniversalLoader size={30} />
         ) : (
-          chats.map((item, i) => (
-            <div key={i} className="chats-item">
-              <MessageItem name={item.name} pic={item.ava} text={item.time} />
-            </div>
-          ))
+          <>
+            {chats.chats != undefined &&
+              chats.chats.map((item, i) => (
+                <div key={i} className="chats-item">
+                  <MessageItem
+                    item={item}
+                    team={currentTeam}
+                    type={type}
+                    message={chats.messages[i]}
+                  />
+                </div>
+              ))}
+          </>
         )}
       </main>
     </div>
   );
 }
 
-function MessageItem(props) {
+function MessageItem({ item, team, type, message }) {
+  const navigate = useNavigate();
+  const handleOpenMessages = () => {
+    navigate(`/${team}/${type}/${item.id}`);
+  };
+  const match = useMatch(`/${team}/${type}/${item.id}`);
   return (
-    <div className="mes-item-wrapper">
-      <img className="chats-item__picture" src={props.pic} alt="автар" />
+    <div
+      className={cn("mes-item-wrapper", match && s.active)}
+      onClick={handleOpenMessages}
+    >
+      <img className="chats-item__picture" src={item.ava} alt="аватар" />
       <div className="chats-item__main">
-        <div className="chats-item__main-header">{props.name}</div>
-        <p className="chats-item__main-text">Hello!!!</p>
+        <div className="chats-item__main-header">{item.name}</div>
+        <p className="chats-item__main-text">{message && message.text}</p>
       </div>
       <time>
-        <span className="chats-item__time">18:00</span>
+        <span className="chats-item__time">{message && message.time}</span>
       </time>
     </div>
   );

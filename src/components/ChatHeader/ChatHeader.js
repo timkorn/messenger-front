@@ -1,23 +1,18 @@
-import MyButton from "../MyButton";
-import hashtag from "../img/hashtag.svg";
-import Search from "../img/search.svg";
-import phone from "../img/phone.svg";
-import points from "../img/points.svg";
-import ava from "../img/ava.png";
-import s from "./ChatHeader.module.scss";
-import { useState } from "react";
-import { Modal } from "@mui/material";
-import Cross from "../img/Cross.svg";
-import { Popover, Button } from "@mui/material";
-import MyTextButton from "../MyTextButton";
-import volumeOff from "../img/Volume-off.svg";
+import { Popover } from "@mui/material";
+import { useState, useContext, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import attached from "../img/add.svg";
-import sett from "../img/Settings-alt.svg";
+import ava from "../img/ava.png";
+import Cross from "../img/Cross.svg";
+import hashtag from "../img/hashtag.svg";
+import points from "../img/points.svg";
+import Search from "../img/search.svg";
+import MyButton from "../MyButton";
+import MyTextButton from "../MyTextButton";
 import { MyTextField2 } from "../MyTextField/MyTextField";
-import Attachment from "../dialogs/Attachment/Attachment";
-import { Route, useLocation, useNavigate } from "react-router-dom";
-import MyLoadingButton from "../MyLoadingButton";
-import cn from "classnames";
+import s from "./ChatHeader.module.scss";
+import ChatContext from "../../context/ChatContext";
+
 const formStyle = {
   style: {
     color: "white",
@@ -29,26 +24,35 @@ const formStyle = {
   autoComplete: "off",
   color: "white",
 };
-function ChatHeader({ type, children }) {
+function ChatHeader({ type, info }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { handleMakeSearch, searchError, setSearchError } =
+    useContext(ChatContext);
   const [call, setCall] = useState(true);
   const [search, setSearch] = useState(false);
-  const [chatSettingsList, setChatSettingsList] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorCallEl, setAnchorCallEl] = useState(null);
+  useEffect(() => {
+    if (!search) {
+      setSearchError("");
+    }
+  }, [search]);
   const handleEnterAudioCall = () => {
     navigate(`${location.pathname}/audiocall`);
   };
-
-  const handleOpenCall = () => {
-    setCall(true);
-  };
-  const handleCloseCall = () => {
-    setCall(false);
-  };
   const handleOpenAttch = () => {
     navigate(`${location.pathname}/attachment`);
+  };
+  const handleKeyDown = (event) => {
+    if (
+      event.key === "Enter" &&
+      event.shiftKey === false &&
+      event.target.value !== ""
+    ) {
+      event.preventDefault();
+      handleMakeSearch(event.target.value);
+    }
   };
   const handleOpenSearch = () => {
     setSearch(true);
@@ -76,7 +80,7 @@ function ChatHeader({ type, children }) {
   return (
     <header id="channel__header">
       <div style={{ display: "flex", alignItems: "center" }}>
-        <ChatTitle type={type}>{children}</ChatTitle>
+        <ChatTitle type={type} info={info} />
         {/* {call && (
           <div className={s.callButton} onClick={handleEnterAudioCall}>
             <span>Идёт встреча</span>
@@ -87,11 +91,15 @@ function ChatHeader({ type, children }) {
       <div id="channel__header-buttons">
         <div className={s.search}>
           {search && (
-            <MyTextField2
-              variant="outlined"
-              inputProps={formStyle}
-              placeholder="Поиск..."
-            />
+            <>
+              {searchError && <p>{searchError}</p>}
+              <MyTextField2
+                variant="outlined"
+                inputProps={formStyle}
+                placeholder="Поиск..."
+                onKeyDown={handleKeyDown}
+              />
+            </>
           )}
         </div>
         <MyButton
@@ -174,12 +182,6 @@ function ChatHeader({ type, children }) {
               <MyTextButton handleClick={handleOpenAttch} image={attached}>
                 Показать вложения
               </MyTextButton>
-              <MyTextButton /* handleClick={} */ image={volumeOff}>
-                Выкл. уведомления
-              </MyTextButton>
-              <MyTextButton /* handleClick={} */ image={sett}>
-                Настройки
-              </MyTextButton>
             </div>
           </div>
         </Popover>
@@ -187,42 +189,48 @@ function ChatHeader({ type, children }) {
     </header>
   );
 }
-function ChatTitle({ children, type }) {
+function ChatTitle({ info, type }) {
   switch (type) {
     case "channel":
-      return <ChannelTitle>{children}</ChannelTitle>;
+      return <ChannelTitle info={info} />;
       break;
     case "chat":
-      return <PersonalChatTitle>{children}</PersonalChatTitle>;
+      return <PersonalChatTitle info={info} />;
       break;
-    case "groupChat":
-      return <GroupChatTitle>{children}</GroupChatTitle>;
+    case "groupchat":
+      return <GroupChatTitle info={info} />;
   }
 }
 
-function ChannelTitle({ children }) {
+function ChannelTitle({ info }) {
   return (
     <div id="channel__header-title">
       <img src={hashtag} alt="hash" id="channel__header-img" />
-      <h2>{children}</h2>
+      <h2>{info}</h2>
     </div>
   );
 }
 
-function PersonalChatTitle({ children }) {
+function PersonalChatTitle({ info }) {
   return (
     <div id="chat__header-title">
-      <img src={ava} alt="hash" className="chat__header-title__img" />
-      <span className="chat_header__name">{children}</span>
+      <img src={info.ava} alt="hash" className="chat__header-title__img" />
+      <span className="chat_header__name">{info.name}</span>
     </div>
   );
 }
-function GroupChatTitle({ children }) {
+function GroupChatTitle({ info }) {
   return (
     <div id="chat__header-title">
-      <img src={ava} alt="hash" className="chat__header-title__img" />
-      <span className="chat_header__name">{children}</span>
+      <img
+        src={info.ava}
+        alt="hash"
+        className="chat__header-title__img"
+        style={{ width: "40px", height: "40px", borderRadius: "100px" }}
+      />
+      <span className="chat_header__name">{info.name}</span>
     </div>
   );
 }
+
 export default ChatHeader;

@@ -11,7 +11,7 @@ function Channel() {
   const name = channels.name[channels.id.indexOf(Number(chatid))];
   return (
     <div id="channel-wrapper">
-      <ChatHeader type="channel">{name}</ChatHeader>
+      <ChatHeader type="channel" info={name} />
       <div id="channel-main">
         <div id="channel-main__messages">
           <PinnedMessages />

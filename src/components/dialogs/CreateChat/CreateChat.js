@@ -332,7 +332,6 @@ const ListOfSearch = ({ inputList, open, load2, handleChoose, type }) => {
 };
 
 const PersonInSearch = ({ item, handleChoose }) => {
-  console.log(item);
   const handleClick = () => {
     console.log("Chosen");
     handleChoose(item);
