@@ -14,6 +14,14 @@ import GroupChat from "./components/GroupChat.jsx";
 import { TeamProvider } from "./context/TeamContext.jsx";
 import StartChoice from "./components/StartChoice.jsx";
 import Data from "./components/Data.jsx";
+/* localhost8080/:id/groupchat||chat/:chatid 
+  localhost8080/:id/:chatid
+  localhost8080/:id
+  localhost8080/login
+  react-router-dom
+  contex api
+  material ui 
+*/
 function App() {
   return (
     <BrowserRouter>
@@ -53,7 +61,7 @@ function App() {
               }
             >
               <Route path="attachment" element={<Attachment />} />
-              {/* <Route path="audiocall" element={<AudioCall />} /> */}
+
               <Route path="*" element={<NotFound />} />
             </Route>
             <Route

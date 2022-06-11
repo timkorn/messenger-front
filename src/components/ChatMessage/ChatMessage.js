@@ -1,6 +1,6 @@
 import s from "./ChatMessage.module.scss";
 import Popover from "@mui/material/Popover";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import cn from "classnames";
 import edit from "../img/Edit-alt.svg";
 import reply from "../img/Reply.svg";
@@ -8,11 +8,28 @@ import ChatContext from "../../context/ChatContext";
 import MyButton from "../MyButton";
 import Pin from "../img/Pin.svg";
 import { MyTextField2 } from "../MyTextField/MyTextField";
-function ChatMessage({ name, pic, text, children, rep, element, key }) {
+import AuthContext from "../../context/AuthContext";
+function ChatMessage({ user, children, message }) {
   let { createReply, createPinRequest, createRed } = useContext(ChatContext);
-
+  let { messages } = useContext(ChatContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [mouseOut, setMouseOut] = useState(true);
+  const [reference, setReference] = useState(false);
+  useEffect(() => {
+    console.log("Ref test:", message);
+    if (message.ref) {
+      let info;
+      for (let i = 0; i < messages.messages.length; i++) {
+        if (messages.messages[i].messageId === message.ref) {
+          info = {
+            text: messages.messages[i].text,
+            name: messages.users[i].username,
+          };
+        }
+      }
+      setReference(info);
+    }
+  }, []);
   const handleMouseOver = () => {
     setMouseOut(false);
   };
@@ -29,12 +46,11 @@ function ChatMessage({ name, pic, text, children, rep, element, key }) {
   const open = Boolean(anchorEl);
   return (
     <div
-      className={cn(s.root, !mouseOut && s.blockHover, rep && s.reply)}
-      key={key}
+      className={cn(s.root, !mouseOut && s.blockHover, reference && s.reply)}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
     >
-      {rep && (
+      {reference && (
         <>
           <div className={s.parent}>
             <div className={s.child}></div>
@@ -47,7 +63,7 @@ function ChatMessage({ name, pic, text, children, rep, element, key }) {
                 marginRight: "10px",
               }}
             >
-              {`${element.name}:`}
+              {`${reference.name}:`}
             </span>
             <span
               style={{
@@ -57,13 +73,13 @@ function ChatMessage({ name, pic, text, children, rep, element, key }) {
                 maxWidth: "70%",
               }}
             >
-              {element.message}
+              {reference.text}
             </span>
           </div>
         </>
       )}
       <div className={s.ava}>
-        <img className={s.img} src={pic} alt="Аватарка" />
+        <img className={s.img} src={user.avatar} alt="Аватарка" />
       </div>
       <div>
         <div className={s.title}>
@@ -75,29 +91,23 @@ function ChatMessage({ name, pic, text, children, rep, element, key }) {
             className={s.name}
             onClick={handlePopover}
           >
-            {name}
+            {user.username}
           </p>
-          <span className={s.time}>18:00</span>
+          <span className={s.time}>{message.time}</span>
         </div>
         <p className={s.body}>{children}</p>
       </div>
       <div className={cn(s.functions, mouseOut && s.hidden)}>
         <MyButton
-          src={edit}
-          handleClick={() => {
-            createRed(name, children);
-          }}
-        />
-        <MyButton
           src={Pin}
           handleClick={() => {
-            createPinRequest(element);
+            createPinRequest(message);
           }}
         />
         <MyButton
           src={reply}
           handleClick={() => {
-            createReply(name, children);
+            createReply(user.username, children, message.messageId);
           }}
         />
       </div>
@@ -128,16 +138,11 @@ function ChatMessage({ name, pic, text, children, rep, element, key }) {
         >
           <img
             className={s.img}
-            src={pic}
+            src={user.avatar}
             alt="Аватарка"
             style={{ width: "60px", height: "60px" }}
           />
-          <h3>{name}</h3>
-          <MyTextField2
-            variant="outlined"
-            placeholder="Написать сообщение"
-            inputProps={{ style: { color: "white", fontSize: "12px" } }}
-          />
+          <h3>{user.username}</h3>
         </div>
       </Popover>
     </div>

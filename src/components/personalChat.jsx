@@ -28,7 +28,7 @@ function PersonalChat() {
         </div>
       ) : (
         <div id="channel-wrapper">
-          <ChatHeader type="chat" info={chat} />
+          <ChatHeader type="chat" info={chat[0]} />
           <div id="channel-main">
             <div id="channel-main__messages">
               <div id="channel-main_message-list">

@@ -9,7 +9,7 @@ import AuthContext from "../context/AuthContext.jsx";
 import { useContext } from "react";
 import MyLoadingButton from "./MyLoadingButton";
 import { MyTextField } from "./MyTextField/MyTextField.js";
-
+import Ava from "./img/ava.png";
 const formStyle = {
   style: { color: "white", width: "250px" },
   autoComplete: "off",
@@ -48,6 +48,7 @@ const Register = () => {
             name: "",
             email: "",
             password: "",
+            avatar: Ava,
           }}
           validationSchema={registerShema}
           onSubmit={(data) => {

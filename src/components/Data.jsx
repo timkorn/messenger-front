@@ -25,6 +25,7 @@ import Comment from "./sidebar/img/Comment.svg";
 import Feed from "./sidebar/img/feed.svg";
 import Group from "./sidebar/img/Group.svg";
 import Logout from "./sidebar/img/Logout.svg";
+import { useEffect } from "react";
 function Data() {
   return (
     <div style={{ display: "none", position: "absolute" }}>

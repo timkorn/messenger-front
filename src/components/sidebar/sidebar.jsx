@@ -107,7 +107,15 @@ function Sidebar() {
           <div id="sidebar_header">
             <div id="sidebar_header_team">
               <img id="tLogo" src={teamInfo.avatar} alt="Фото команды" />
-              <div>{teamInfo.name}</div>
+              <div
+                style={{
+                  fontSize: "15px",
+                  maxWidth: "130px",
+                  overflow: "hidden",
+                }}
+              >
+                {teamInfo.name}
+              </div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <MyButton
                   src={arrow}

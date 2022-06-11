@@ -23,12 +23,14 @@ const formStyle = {
   autoComplete: "off",
   color: "white",
 };
+
 const settingsShema = yup.object({
   name: yup
     .string()
     .required("поле не заполнено")
     .max(20, "превышен лимит символов(20)"),
 });
+
 function CreateChat({ handleClose, open, type }) {
   const { logoutUser, authTokens, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -40,7 +42,8 @@ function CreateChat({ handleClose, open, type }) {
   const [load, setLoad] = useState(false);
   const [openList, setOpenList] = useState(false);
   const [peopleError, setPeopleError] = useState("");
-  const { showChats } = useContext(ChatContext);
+  const { showChats, chats } = useContext(ChatContext);
+
   useEffect(() => {
     setPeopleError("");
     if (!open) {
@@ -95,7 +98,27 @@ function CreateChat({ handleClose, open, type }) {
         let result = await response.json();
 
         if (response.status === 200) {
-          setInputList(result.filter((item) => item.id != user.id));
+          if (type !== "chat") {
+            setInputList(
+              result.filter((item) => item.id != user.id && item.id != 1)
+            );
+          } else {
+            let result1 = result.filter((item) => {
+              for (let i = 0; i < chats.chats.length; i++) {
+                if (
+                  item.id + " " + user.id === chats.chats[i].participants ||
+                  user.id + " " + item.id === chats.chats[i].participants
+                ) {
+                  return false;
+                }
+              }
+              return true;
+            });
+
+            setInputList(
+              result1.filter((item) => item.id != user.id && item.id != 1)
+            );
+          }
           setLoad2(false);
         } else {
           throw new Error();
@@ -136,11 +159,12 @@ function CreateChat({ handleClose, open, type }) {
             team_participants: "",
             photo: Ava,
           }}
-          validationSchema={settingsShema}
+          validationSchema={type === "groupchat" && settingsShema}
           onSubmit={(data) => {
+            console.log("creating chat");
             if (people == []) {
               setPeopleError("Добавьте собеседников");
-            } else if (people.length < 2) {
+            } else if (people.length < 2 && type === "groupchat") {
               setPeopleError("Группа образуется от 3 человек");
             } else {
               createChat(data);
@@ -149,15 +173,42 @@ function CreateChat({ handleClose, open, type }) {
               setLoad(true);
               async function create(data) {
                 const participants = people;
-                const name = data.name;
+
                 let ava;
                 let t;
+                let name;
                 if (type === "groupchat") {
                   t = "GROUP";
                   ava = data.photo;
+                  name = data.name;
                 } else {
                   t = "PERSONAL";
-                  ava = "";
+                }
+                if (t === "PERSONAL") {
+                  let person = participants[0];
+                  let personId = person.id;
+                  let personAva = person.avatar;
+                  let personName = person.username;
+                  let response1 = await fetch(
+                    "http://localhost:8080/chat/getUser",
+                    {
+                      method: "GET",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: String(authTokens.accessToken),
+                      },
+                    }
+                  );
+                  let result1 = await response1.json();
+
+                  if (result1.id < personId) {
+                    name = result1.username + "," + personName;
+                    ava = result1.avatar + " " + personAva;
+                    console.log(ava.split(" "));
+                  } else {
+                    name = personName + "," + result1.username;
+                    ava = personAva + " " + result1.avatar;
+                  }
                 }
                 let response = await fetch(
                   "http://localhost:8080/chat/create",
@@ -172,6 +223,7 @@ function CreateChat({ handleClose, open, type }) {
                 );
                 let result = await response.json();
                 if (response.status === 200) {
+                  console.log(result);
                   setLoad(false);
                   handleClose();
                   showChats(t);

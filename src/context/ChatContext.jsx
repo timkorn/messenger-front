@@ -14,7 +14,7 @@ const ChatContext = createContext();
 export default ChatContext;
 var stompClient = null;
 export const ChatProvider = ({ children }) => {
-  const [reply, setReply] = useState(false);
+  const [reply, setReply] = useState(null);
   const [chatRequest, setChatRequest] = useState(false);
   const [red, setRed] = useState(false);
   const [typeAddMesField, setTypeMesField] = useState(false);
@@ -22,7 +22,7 @@ export const ChatProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [text, setText] = useState("");
   const [contacts, setContacts] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState({ messages: [], users: [] });
   const [chatLoad, setChatLoad] = useState(true);
   const [chats, setChats] = useState([]);
   const navigate = useNavigate();
@@ -70,8 +70,33 @@ export const ChatProvider = ({ children }) => {
       body: JSON.stringify({ id: user.id, chat_type: type }),
     });
     let result = await response.json();
-    console.log(result);
+    if (type === "PERSONAL") {
+      for (let i = 0; i < result.chats.length; i++) {
+        let people = result.chats[i].participants.split(" ");
+        let names = result.chats[i].name.split(",");
+        let images = result.chats[i].ava.split(" ");
+        console.log("Images:", images);
+        let me, other;
+        people[0] = Number(people[0]);
+        people[1] = Number(people[1]);
+        if (people[0] == user.id) {
+          me = people[0];
+          other = people[1];
+        } else {
+          me = people[1];
+          other = people[0];
+        }
+        if (me < other) {
+          result.chats[i].ava = images[1];
+          result.chats[i].name = names[1];
+        } else {
+          result.chats[i].ava = images[0];
+          result.chats[i].name = names[0];
+        }
+      }
+    }
     if (response.status === 200) {
+      console.log(result);
       setChats(result);
       return result;
     } else if (result.error === "Unauthorized") {
@@ -80,12 +105,13 @@ export const ChatProvider = ({ children }) => {
       throw new Error();
     }
   }
-  const createReply = (name, message) => {
+  const createReply = (name, message, rep_id) => {
     deleteRed();
     setTypeMesField("reply");
     setReply({
       name: name,
       message: message,
+      id: rep_id,
     });
   };
   const createRed = (name, message) => {
@@ -103,7 +129,7 @@ export const ChatProvider = ({ children }) => {
     setRedMessage(false);
   };
   const deleteReply = () => {
-    setReply(false);
+    setReply(null);
     setTypeMesField(false);
   };
   const createPinRequest = (element) => {
@@ -116,33 +142,41 @@ export const ChatProvider = ({ children }) => {
   const makeNewPin = (id, mesId) => {
     setChatRequest(false);
   };
-
+  const clean = () => {
+    deleteReply();
+  };
   useEffect(() => {
     if (chatid === undefined) {
       navigate("/");
     }
     console.log();
     if (chatid !== "start") {
+      connect();
       findChatMessages(chatid).then((msgs) => {
         setMessages(msgs);
         setChatLoad(false);
-        console.log(msgs);
+        sessionStorage.setItem("chat", JSON.stringify(msgs));
       });
     }
     return () => {
       setChatLoad(true);
+      if (stompClient !== null) {
+        stompClient.disconnect(disconnected, {});
+      }
+      clean();
     };
     /* loadContacts(); */
   }, [chatid]);
-
-  /* useEffect(() => {
+  const disconnected = () => {
+    console.log("Disconnected");
+  };
+  /*  useEffect(() => {
     connect();
     findChatMessages(chatid).then((msgs) => {
       setMessages(msgs);
       setChatLoad(false);
       console.log(msgs);
     });
-    /* loadContacts(); 
   }, []); */
   const connect = () => {
     var sockJS = new SockJS("http://localhost:8080/ws");
@@ -164,10 +198,14 @@ export const ChatProvider = ({ children }) => {
 
   const onMessageReceived = (msg) => {
     const mess = JSON.parse(msg.body);
-    console.log(messages);
-    const newMessages = [...messages, mess];
-    console.log(newMessages);
+    let mess1 = JSON.parse(sessionStorage.getItem("chat"));
+    console.log(mess);
+    const newMessages = {
+      messages: [...mess1.messages, mess.message],
+      users: [...mess1.users, mess.user],
+    };
     setMessages(newMessages);
+    sessionStorage.setItem("chat", JSON.stringify(newMessages));
     /* if (active.id === notification.senderId) {
       findChatMessage(notification.id).then((message) => {
         const newMessages = JSON.parse(
@@ -183,13 +221,22 @@ export const ChatProvider = ({ children }) => {
   };
 
   const sendMessage = (msg) => {
+    let date = new Date();
+    let day = String(date.getDay());
+    let month = String(date.getMonth());
+    let hour = String(date.getHours());
+    let minute = String(date.getMinutes());
     if (msg.trim() !== "") {
-      const message = {
-        userId: user.id,
+      let message = {
+        user_id: user.id,
         chat_id: Number(chatid),
         text: msg,
-        time: new Date(),
+        time: day + "." + month + " " + hour + ":" + minute,
       };
+      if (reply) {
+        message.ref = reply.id;
+      }
+      console.log("send mes", message);
       stompClient.send("/app/chat", {}, JSON.stringify(message));
     }
   };

@@ -21,23 +21,20 @@ export const AuthProvider = ({ children }) => {
     const email = data.email;
     const password = data.password;
     const name = data.name;
-
+    const avatar = data.avatar;
     let response = await fetch("http://localhost:8080/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
       },
-      body: JSON.stringify({ email, password, name }),
+      body: JSON.stringify({ email, password, name, avatar }),
     });
 
     let result = await response.json();
     if (response.status === 200) {
       try {
-        console.log(result);
         setAuthTokens(result);
-        console.log(1);
         setUser(jwt_decode(result.accessToken));
-        console.log(2);
         localStorage.setItem("authTokens", JSON.stringify(result));
         navigate("/");
       } catch (err) {
@@ -126,7 +123,7 @@ export const AuthProvider = ({ children }) => {
         console.log("Hello!!!");
         updateToken();
       }
-    }, minutes * 7);
+    }, minutes * 10);
     return () => {
       clearInterval(interval);
     };
