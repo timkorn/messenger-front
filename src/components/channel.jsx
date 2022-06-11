@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MessageField from "./common/messageField.jsx";
 import ChatHeader from "./ChatHeader";
 import Messages from "./Messages/Messages.js";
 import PinnedMessages from "./PinnedMessages/PinnedMessage.js";
 import { useParams, Outlet } from "react-router-dom";
+import TeamContext from "../context/TeamContext.jsx";
 function Channel() {
-  const { id } = useParams();
-  console.log(id);
+  const { chatid } = useParams();
+  const { channels } = useContext(TeamContext);
+  const name = channels.name[channels.id.indexOf(Number(chatid))];
   return (
     <div id="channel-wrapper">
-      <ChatHeader type="channel">relax</ChatHeader>
+      <ChatHeader type="channel" info={name} />
       <div id="channel-main">
         <div id="channel-main__messages">
           <PinnedMessages />

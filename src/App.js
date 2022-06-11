@@ -17,17 +17,17 @@ import Data from "./components/Data.jsx";
 function App() {
   return (
     <BrowserRouter>
-      <Data />
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
+          <Route path="/notfound" element={<NotFound />} />
           <Route
             path="/"
             element={
               <PrivateRoute>
                 <TeamProvider>
+                  <Data />
                   <StartChoice />
                 </TeamProvider>
               </PrivateRoute>
@@ -38,13 +38,14 @@ function App() {
             element={
               <PrivateRoute>
                 <TeamProvider>
+                  <Data />
                   <Main />
                 </TeamProvider>
               </PrivateRoute>
             }
           >
             <Route
-              path="channel/:id"
+              path="channel/:chatid"
               element={
                 <ChatProvider>
                   <Channel />
@@ -52,11 +53,11 @@ function App() {
               }
             >
               <Route path="attachment" element={<Attachment />} />
-              <Route path="audiocall" element={<AudioCall />} />
+              {/* <Route path="audiocall" element={<AudioCall />} /> */}
               <Route path="*" element={<NotFound />} />
             </Route>
             <Route
-              path="chat/:id"
+              path="chat/:chatid"
               element={
                 <ChatProvider>
                   <PersonalChat />
@@ -68,7 +69,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Route>
             <Route
-              path="groupchat/:id"
+              path="groupchat/:chatid"
               element={
                 <ChatProvider>
                   <GroupChat />

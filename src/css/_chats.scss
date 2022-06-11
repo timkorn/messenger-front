@@ -1,5 +1,5 @@
 .chats-list__main {
-  width: 100%;
+  width: 260px;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -40,6 +40,7 @@
   height: 79px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .mes-item-wrapper {

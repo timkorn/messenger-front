@@ -4,11 +4,11 @@ import React, { useEffect, useContext } from "react";
 import MyButton from "../MyButton";
 import AdditionalMessageLine from "../AdditionalMessageLine";
 import ChatContext from "../../context/ChatContext";
+import { useParams } from "react-router-dom";
 function MessageField() {
   let { reply, red, redMessage, typeAddMesField, sendMessage } =
     useContext(ChatContext);
   const handleKeyDown = (event) => {
-    console.log(event);
     if (event.key === "Enter" && event.shiftKey === false) {
       event.preventDefault();
       handleSend();
@@ -17,7 +17,7 @@ function MessageField() {
   const handleSend = () => {
     if (document.getElementById("textEnter").innerText != "") {
       const text = document.getElementById("textEnter").innerText;
-      sendMessage("hELLO");
+      sendMessage(document.getElementById("textEnter").innerText);
       document.getElementById("textEnter").innerText = "";
     }
   };

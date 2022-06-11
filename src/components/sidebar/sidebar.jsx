@@ -1,7 +1,8 @@
 import { Button, Dialog, Popover } from "@mui/material";
 import { Form, Formik } from "formik";
+import Hashtag from "./img/hashtag.svg";
 import { useContext, useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import * as yup from "yup";
 import AuthContext from "../../context/AuthContext";
 import cross from "../img/Cross.svg";
@@ -25,6 +26,8 @@ import TeamContext from "../../context/TeamContext";
 import ShowTeamsItem from "../ShowTeamsItem";
 import Plus from "../img/Plus.svg";
 import AddPerson from "../dialogs/AddPerson";
+import UniversalLoader from "../common/loader";
+
 /* const channelShema = yup.object({
   name: yup.string().required("Введите имя"),
 
@@ -46,7 +49,19 @@ function Sidebar() {
   const [openAdd, setOpenAdd] = useState(false);
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
-  const { teams, showTeams, sendTeam } = useContext(TeamContext);
+  const { teams, showTeams, currentTeam, showChannels, channels, teamInfo } =
+    useContext(TeamContext);
+  const [loadChannels, setLoadChannels] = useState(true);
+  useEffect(() => {
+    showChannels().then(() => {
+      setLoadChannels(false);
+    });
+  }, [currentTeam]);
+  useEffect(() => {
+    showChannels().then(() => {
+      setLoadChannels(false);
+    });
+  }, []);
   const handleCreateOpen = () => {
     setOpenCreate(true);
     setAnchorEl(null);
@@ -91,8 +106,8 @@ function Sidebar() {
         <div id="sidebar">
           <div id="sidebar_header">
             <div id="sidebar_header_team">
-              <img id="tLogo" src={teamLogo} alt="Фото команды" />
-              <div>Курсач</div>
+              <img id="tLogo" src={teamInfo.avatar} alt="Фото команды" />
+              <div>{teamInfo.name}</div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <MyButton
                   src={arrow}
@@ -100,7 +115,7 @@ function Sidebar() {
                   alt="Выбор команды"
                   handleClick={handlePopover}
                 />
-                <MyButton
+                {/* <MyButton
                   src={Notif}
                   className={s.notif}
                   style={{
@@ -108,7 +123,7 @@ function Sidebar() {
                     top: "27px",
                     right: "15px",
                   }}
-                />
+                /> */}
               </div>
               <Popover
                 open={teamsChoiceState}
@@ -172,7 +187,7 @@ function Sidebar() {
           <div id="sidebar_main">
             <div id="sidebar_main_default">
               <NavLink
-                to="/chat/start"
+                to={`chat/start`}
                 className={({ isActive }) =>
                   isActive ? "sidebar_choice activeSidebar" : "sidebar_choice"
                 }
@@ -183,7 +198,7 @@ function Sidebar() {
                 </div>
               </NavLink>
               <NavLink
-                to="/groupchat/start"
+                to={`groupchat/start`}
                 className={({ isActive }) =>
                   isActive ? "sidebar_choice activeSidebar" : "sidebar_choice"
                 }
@@ -201,10 +216,20 @@ function Sidebar() {
                   handleClick={handleOpen}
                   className={s.plus}
                 />
-                <CreateChannel open={open} handleClose={handleClose} />
+                <CreateChannel
+                  open={open}
+                  handleClose={handleClose}
+                  id={currentTeam}
+                />
               </div>
               <div className="sidebar_main_channels ">
-                <div id="channelList"></div>
+                <div id="channelList" style={{ position: "relative" }}>
+                  {loadChannels ? (
+                    <UniversalLoader size={30} />
+                  ) : (
+                    <ShowChannels channels={channels} team_id={currentTeam} />
+                  )}
+                </div>
                 <MyTextButton
                   handleClick={handleOpenAdd}
                   image={Plus}
@@ -219,6 +244,32 @@ function Sidebar() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ShowChannels({ channels, team_id }) {
+  return (
+    <>
+      {channels &&
+        channels.id.map((item, i) => (
+          <ChannelButton id={item} name={channels.name[i]} team_id={team_id} />
+        ))}
+    </>
+  );
+}
+function ChannelButton({ id, name, team_id }) {
+  return (
+    <NavLink
+      to={`/${team_id}/channel/${id}`}
+      className={({ isActive }) =>
+        isActive ? "sidebar_choice activeSidebar" : "sidebar_choice"
+      }
+    >
+      <div className="sidebar_main_topics">
+        <img src={Hashtag} class="sidebar_icon" />
+        <div>{name}</div>
+      </div>
+    </NavLink>
   );
 }
 

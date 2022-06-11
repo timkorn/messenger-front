@@ -146,6 +146,9 @@
 
 .activeSidebar {
   background-color: rgba(121, 128, 134, 0.5);
+  &:hover {
+    background-color: rgba(121, 128, 134, 0.5);
+  }
 }
 
 #sidebar_main_channels_header {
@@ -173,6 +176,7 @@
   justify-content: center;
   align-items: center;
 }
+
 #create-chan-button {
   background-color: $mainButtonColor;
   color: white;

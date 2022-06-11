@@ -12,6 +12,7 @@ import MyLoadingButton from "../../MyLoadingButton";
 import { LayoutGroupContext } from "framer-motion";
 import AuthContext from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import TeamContext from "../../../context/TeamContext";
 
 const formStyle = {
   style: { color: "white", width: "250px", padding: "10px 10px" },
@@ -20,10 +21,17 @@ const formStyle = {
 };
 
 function AddPerson({ handleClose, open }) {
-  const { logout, authTokens } = useContext(AuthContext);
+  const { currentTeam } = useContext(TeamContext);
+  const { authTokens, logoutUser } = useContext(AuthContext);
   const [load, setLoad] = useState(false);
-  const navigate = useNavigate();
-
+  const [addPersonError, setAddPersonError] = useState("");
+  useEffect(() => {
+    if (!open) {
+      if (addPersonError) {
+        setAddPersonError("");
+      }
+    }
+  }, [open]);
   return (
     <Dialog
       onClose={handleClose}
@@ -39,42 +47,49 @@ function AddPerson({ handleClose, open }) {
           className="closeModal"
           handleClick={handleClose}
         />
-        <h3>Добавление участников</h3>
+        <h3 style={{ marginBottom: "30px" }}>Добавление участников</h3>
+        {addPersonError && (
+          <p className="loginError" style={{ top: "40px" }}>
+            {addPersonError}
+          </p>
+        )}
         <Formik
           initialValues={{
-            team_participants: "",
+            participants: "",
           }}
           onSubmit={(data) => {
             setLoad(true);
-            async function create(data) {
-              const team_participants = data.team_participants;
-              const name = data.name;
+            setAddPersonError("");
+            async function addPerson(data) {
+              const participants = data.participants;
               let response = await fetch(
                 "http://localhost:8080/teams/addPerson",
                 {
-                  method: "POST",
+                  method: "PATCH",
                   headers: {
                     "Content-Type": "application/json",
                     Authorization: String(authTokens.accessToken),
                   },
-                  body: JSON.stringify({ name, team_participants }),
+                  body: JSON.stringify({
+                    team_id: currentTeam,
+                    participants,
+                  }),
                 }
               );
-              let result = await response.json();
               if (response.status === 200) {
                 setLoad(false);
                 handleClose();
-                navigate(`/${result.id}`);
-              } else if (result.error === "Unauthorized") {
-                logout();
               } else {
+                let result = await response.json();
+                if (result.error === "Unauthorized") {
+                  logoutUser();
+                }
                 throw new Error();
               }
             }
-
-            create(data).catch((err) => {
+            addPerson(data).catch((err) => {
               setLoad(false);
-              handleClose();
+              setAddPersonError("email введён некорректно");
             });
           }}
         >
@@ -83,7 +98,7 @@ function AddPerson({ handleClose, open }) {
               <MyTextField
                 rows={4}
                 variant="outlined"
-                name="team_participants"
+                name="participants"
                 type="input"
                 multiline
                 inputProps={{

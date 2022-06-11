@@ -19,6 +19,67 @@ export const ChatProvider = ({ children }) => {
   const [red, setRed] = useState(false);
   const [typeAddMesField, setTypeMesField] = useState(false);
   const [redMessage, setRedMessage] = useState(null);
+  const { user } = useContext(AuthContext);
+  const [text, setText] = useState("");
+  const [contacts, setContacts] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [chatLoad, setChatLoad] = useState(true);
+  const [chats, setChats] = useState([]);
+  const navigate = useNavigate();
+  const { chatid } = useParams();
+  const { authTokens, logoutUser } = useContext(AuthContext);
+  const [searchMessages, setSearchMessages] = useState([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [chatAim, setChatAim] = useState(null);
+  const [searchError, setSearchError] = useState("");
+  useEffect(() => {
+    if (!searchOpen) {
+      setSearchMessages([]);
+    }
+  }, [searchOpen]);
+  const handleMakeSearch = (value) => {
+    let serMess = messages.filter((item) => {
+      if (item.username !== -1 || item.username.text !== -1) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    if (serMess.length === 0) {
+      setSearchError("Нет подходящих сообщений");
+    } else {
+      handleOpenSearch(serMess);
+    }
+  };
+  const handleOpenSearch = (msg) => {
+    setSearchMessages(msg);
+    setSearchOpen(true);
+  };
+  const handleCloseSearch = (id) => {
+    setSearchMessages([]);
+    setSearchOpen(false);
+    setChatAim(id);
+  };
+  async function showChats(type) {
+    let response = await fetch("http://localhost:8080/chat/showChats", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(authTokens.accessToken),
+      },
+      body: JSON.stringify({ id: user.id, chat_type: type }),
+    });
+    let result = await response.json();
+    console.log(result);
+    if (response.status === 200) {
+      setChats(result);
+      return result;
+    } else if (result.error === "Unauthorized") {
+      logoutUser();
+    } else {
+      throw new Error();
+    }
+  }
   const createReply = (name, message) => {
     deleteRed();
     setTypeMesField("reply");
@@ -55,38 +116,44 @@ export const ChatProvider = ({ children }) => {
   const makeNewPin = (id, mesId) => {
     setChatRequest(false);
   };
-  const { user } = useContext(AuthContext);
-  const [text, setText] = useState("");
-  const [contacts, setContacts] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const navigate = useNavigate();
-  const { id } = useParams();
-  useEffect(() => {
-    if (id === undefined) {
-      navigate("/");
-    }
-    findChatMessages(id, user.id).then((msgs) => setMessages(msgs));
-    /* loadContacts(); 
-  }, [id]);
 
   useEffect(() => {
-    /* if (localStorage.getItem("accessToken") === null) {
-      navigate("/login");
-    } */
-    connect();
+    if (chatid === undefined) {
+      navigate("/");
+    }
+    console.log();
+    if (chatid !== "start") {
+      findChatMessages(chatid).then((msgs) => {
+        setMessages(msgs);
+        setChatLoad(false);
+        console.log(msgs);
+      });
+    }
+    return () => {
+      setChatLoad(true);
+    };
     /* loadContacts(); */
-  }, []);
+  }, [chatid]);
+
+  /* useEffect(() => {
+    connect();
+    findChatMessages(chatid).then((msgs) => {
+      setMessages(msgs);
+      setChatLoad(false);
+      console.log(msgs);
+    });
+    /* loadContacts(); 
+  }, []); */
   const connect = () => {
     var sockJS = new SockJS("http://localhost:8080/ws");
     stompClient = Stomp.over(sockJS);
-    stompClient.connect(user, onConnected, onError);
+    stompClient.connect({ id: user.id }, onConnected, onError);
   };
 
   const onConnected = () => {
     console.log("connected");
-    console.log(user);
     stompClient.subscribe(
-      "/user/" + user.id + "/queue/messages",
+      "/user/" + chatid + "/queue/messages",
       onMessageReceived
     );
   };
@@ -96,12 +163,12 @@ export const ChatProvider = ({ children }) => {
   };
 
   const onMessageReceived = (msg) => {
-    const notification = JSON.parse(msg.body);
-    const active = JSON.parse(
-      sessionStorage.getItem("recoil-persist")
-    ).chatActiveContact;
-
-    if (active.id === notification.senderId) {
+    const mess = JSON.parse(msg.body);
+    console.log(messages);
+    const newMessages = [...messages, mess];
+    console.log(newMessages);
+    setMessages(newMessages);
+    /* if (active.id === notification.senderId) {
       findChatMessage(notification.id).then((message) => {
         const newMessages = JSON.parse(
           sessionStorage.getItem("recoil-persist")
@@ -110,24 +177,20 @@ export const ChatProvider = ({ children }) => {
         setMessages(newMessages);
       });
     } else {
-      /*  message.info("Received a new message from " + notification.senderName); */
-    }
+        message.info("Received a new message from " + notification.senderName); 
+    } */
     loadContacts();
   };
 
   const sendMessage = (msg) => {
     if (msg.trim() !== "") {
       const message = {
-        user: { id: user.id },
-        chat_id: id,
+        userId: user.id,
+        chat_id: Number(chatid),
         text: msg,
         time: new Date(),
       };
       stompClient.send("/app/chat", {}, JSON.stringify(message));
-
-      const newMessages = [...messages];
-      newMessages.push(message);
-      setMessages(newMessages);
     }
   };
 
@@ -141,14 +204,14 @@ export const ChatProvider = ({ children }) => {
       )
     );
 
-    promise.then((promises) =>
+    /*  promise.then((promises) =>
       Promise.all(promises).then((users) => {
         setContacts(users);
-        /* if (activeContact === undefined && users.length > 0) {
+         if (activeContact === undefined && users.length > 0) {
           setActiveContact(users[0]);
-        } */
+        }
       })
-    );
+    );  */
   };
   let contextData = {
     createReply,
@@ -165,6 +228,20 @@ export const ChatProvider = ({ children }) => {
     typeAddMesField,
     redMessage,
     sendMessage,
+    messages,
+    chatLoad,
+    chatid,
+    showChats,
+    chats,
+    chatAim,
+    setChatAim,
+    searchMessages,
+    handleOpenSearch,
+    handleCloseSearch,
+    handleMakeSearch,
+    searchError,
+    setSearchOpen,
+    setSearchError,
   };
   return (
     <ChatContext.Provider value={contextData}>{children}</ChatContext.Provider>

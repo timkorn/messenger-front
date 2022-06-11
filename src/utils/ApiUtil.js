@@ -8,8 +8,11 @@ const request = (options) => {
     headers.append("Content-Type", "application/json");
   }
 
-  if (localStorage.getItem("accessToken")) {
-    headers.append("Authorization", localStorage.getItem("accessToken"));
+  if (localStorage.getItem("authTokens")) {
+    headers.append(
+      "Authorization",
+      localStorage.getItem("authTokens").accessToken
+    );
   }
 
   const defaults = { headers: headers };
@@ -58,13 +61,13 @@ export function countNewMessages(senderId, recipientId) {
   });
 }
 
-export function findChatMessages(senderId, recipientId) {
-  if (!localStorage.getItem("accessToken")) {
+export function findChatMessages(chatId) {
+  if (!localStorage.getItem("authTokens")) {
     return Promise.reject("No access token set.");
   }
 
   return request({
-    url: CHAT_SERVICE + "/messages/" + senderId + "/" + recipientId,
+    url: CHAT_SERVICE + "/messages/" + chatId,
     method: "GET",
   });
 }

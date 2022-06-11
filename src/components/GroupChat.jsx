@@ -3,13 +3,21 @@ import Messages from "./Messages/Messages.js";
 import MessageField from "./common/messageField.jsx";
 import ChatHeader from "./ChatHeader/ChatHeader.js";
 import { useParams } from "react-router-dom";
-
+import ChatContext from "../context/ChatContext.jsx";
+import { useContext } from "react";
 function GroupChat() {
-  const { id } = useParams();
+  const { chatid } = useParams();
+  const { chats } = useContext(ChatContext);
+  let chat;
+  if (chatid !== "start" && chats.chats != undefined) {
+    let chats2 = chats.chats;
+    console.log(chats2);
+    chat = chats2.filter((item) => item.id === Number(chatid));
+  }
   return (
     <>
-      <Conversations />
-      {id === "start" ? (
+      <Conversations type="groupchat" />
+      {chatid === "start" ? (
         <div
           style={{
             display: "flex",
@@ -18,11 +26,11 @@ function GroupChat() {
             width: "100%",
           }}
         >
-          <span>Выберите чат</span>
+          <span>Выберите или создайте чат</span>
         </div>
       ) : (
         <div id="channel-wrapper">
-          <ChatHeader type="chat">Timur Kornilov</ChatHeader>
+          <ChatHeader type="groupchat" info={chat[0]} />
           <div id="channel-main">
             <div id="channel-main__messages">
               <div id="channel-main_message-list">

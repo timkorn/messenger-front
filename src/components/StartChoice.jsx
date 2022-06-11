@@ -6,11 +6,12 @@ import { useNavigate } from "react-router-dom";
 import CreateTeam from "./dialogs/CreateTeam/CreateTeam.js";
 import MyTextButton from "./MyTextButton/index.js";
 import Button from "@mui/material/Button";
+import AuthContext from "../context/AuthContext.jsx";
 function StartChoice() {
   const [loading, setLoading] = useState(true);
   const { teams, showTeams } = useContext(TeamContext);
   const [openCreate, setOpenCreate] = useState(false);
-
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const handleCreateOpen = () => {
     setOpenCreate(true);
@@ -21,7 +22,6 @@ function StartChoice() {
   useEffect(() => {
     const f = async () => {
       let result = await showTeams().catch((err) => console.log(err));
-      console.log(result);
       if (localStorage.getItem("team")) {
         if (localStorage.getItem("team") in result.id) {
           navigate(`/${localStorage.getItem("team")}`);
@@ -44,7 +44,7 @@ function StartChoice() {
           alignItems: "center",
         }}
       >
-        <h1>Добро пожаловать в ТУВАСИК!!!</h1>
+        <h1>{user.sub}, добро пожаловать в ТУВАСИК!!!</h1>
 
         <div
           style={{
