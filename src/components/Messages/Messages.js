@@ -49,10 +49,17 @@ function Messages({ type, pin }) {
     return (
       <div
         ref={ref}
-        className={cn(s.root, pin && s.pin, typeAddMesField && s.reply)}
+        className={cn(
+          s.root,
+          pin && s.pin,
+          typeAddMesField && s.reply,
+          searchOpen && s.search
+        )}
       >
         {searchOpen ? (
-          <SearchMessages />
+          <>
+            <SearchMessages />
+          </>
         ) : (
           messages.messages.map((item, i) => (
             <div key={item.name}>
@@ -78,12 +85,6 @@ function SearchMessages({ open }) {
     useContext(ChatContext);
   return (
     <>
-      <MyButton
-        src={cross}
-        alt="закрыть"
-        className="closeModal"
-        handleClick={handleCloseSearch}
-      />
       {searchMessages.messages.map((item, i) => (
         <div key={item.name}>
           <ChatMessage

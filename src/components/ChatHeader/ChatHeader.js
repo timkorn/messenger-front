@@ -83,7 +83,9 @@ function ChatHeader({ type, info }) {
         <div className={s.search}>
           {search && (
             <>
-              {searchError && <p>{searchError}</p>}
+              {searchError && (
+                <p style={{ marginRight: "15px" }}>{searchError}</p>
+              )}
               <MyTextField2
                 variant="outlined"
                 inputProps={formStyle}

@@ -16,6 +16,7 @@ var stompClient = null;
 export const ChatProvider = ({ children }) => {
   const [reply, setReply] = useState(null);
   const [chatRequest, setChatRequest] = useState(false);
+  const [searchValue, setSearchValue] = useState(null);
   const [red, setRed] = useState(false);
   const [typeAddMesField, setTypeMesField] = useState(false);
   const [redMessage, setRedMessage] = useState(null);
@@ -53,6 +54,7 @@ export const ChatProvider = ({ children }) => {
     if (serMess.length === 0) {
       setSearchError("Нет подходящих сообщений");
     } else {
+      setSearchValue(value);
       handleOpenSearch({ messages: serMess, users: users });
     }
   };
@@ -62,8 +64,10 @@ export const ChatProvider = ({ children }) => {
     setSearchOpen(true);
   };
   const handleCloseSearch = (id) => {
+    setSearchValue(null);
     setSearchMessages([]);
     setSearchOpen(false);
+    setSearchError("");
     if (id !== false) {
       setChatAim(id);
     }
@@ -303,6 +307,7 @@ export const ChatProvider = ({ children }) => {
     setSearchOpen,
     setSearchError,
     searchOpen,
+    searchValue,
   };
   return (
     <ChatContext.Provider value={contextData}>{children}</ChatContext.Provider>
