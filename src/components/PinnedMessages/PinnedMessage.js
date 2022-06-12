@@ -15,13 +15,22 @@ function PinnedMessages() {
     searchOpen,
     searchValue,
     handleCloseSearch,
+    pin,
+    setChatAim,
   } = useContext(ChatContext);
   const [delPin, setDelPin] = useState(false);
-  const handleDelPin = () => {
+  const handleDelPin = (event) => {
+    event.stopPropagation();
     setDelPin(true);
   };
+  const handleClick = () => {
+    setChatAim(pin.message.messageId);
+  };
   return (
-    <div className={s.all}>
+    <div
+      className={s.all}
+      onClick={pin && !searchOpen && !chatRequest && handleClick}
+    >
       <div className={cn(s.root, searchOpen && s.search)}>
         {searchOpen && (
           <>
@@ -42,16 +51,18 @@ function PinnedMessages() {
                 <>
                   <p>Новое закреплённое сообщение:</p>
                   <div className={s.text}>
-                    <span>{chatRequest.name}</span>
-                    <span className={s.message}>{chatRequest.message}</span>
+                    <span>{chatRequest.user.username}</span>
+                    <span className={s.message}>
+                      {chatRequest.message.text}
+                    </span>
                   </div>
                 </>
               ) : (
                 <>
                   <img src={Pin} />
                   <div className={s.text}>
-                    <span>Тимур Корнилов</span>
-                    <span className={s.message}>Всем привет!!!</span>
+                    <span>{pin.user.username}</span>
+                    <span className={s.message}>{pin.message.text}</span>
                   </div>
                 </>
               )}
@@ -82,7 +93,8 @@ function PinnedMessages() {
                     </Button>
                     <Button
                       style={{ fontSize: "12px" }}
-                      onClick={() => {
+                      onClick={(event) => {
+                        event.stopPropagation();
                         setDelPin(false);
                       }}
                     >

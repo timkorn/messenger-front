@@ -7,12 +7,12 @@ import ChatContext from "../../context/ChatContext";
 import AuthContext from "../../context/AuthContext";
 import MyButton from "../MyButton";
 import cross from "../img/Cross.svg";
-function Messages({ type, pin }) {
-  let { typeAddMesField, chatLoad, messages, chatAim, setChatAim } =
+function Messages({ type }) {
+  let { typeAddMesField, chatLoad, messages, chatAim, setChatAim, pin } =
     useContext(ChatContext);
   const [person, setPerson] = useState(null);
   const [isLoading, setLoading] = useState(true);
-  const { searchOpen, searchMessages } = useContext(ChatContext);
+  const { searchOpen, searchMessages, chatRequest } = useContext(ChatContext);
   const { user } = useContext(AuthContext);
   const ref = useRef(null);
   if (chatAim) {
@@ -51,7 +51,7 @@ function Messages({ type, pin }) {
         ref={ref}
         className={cn(
           s.root,
-          pin && s.pin,
+          (searchOpen || pin || chatRequest) && s.pin,
           typeAddMesField && s.reply,
           searchOpen && s.search
         )}

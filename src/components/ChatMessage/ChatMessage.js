@@ -17,7 +17,6 @@ function ChatMessage({ user, children, message, search }) {
   const [mouseOut, setMouseOut] = useState(true);
   const [reference, setReference] = useState(false);
   useEffect(() => {
-    console.log("Ref test:", message);
     if (message.ref) {
       let info;
       for (let i = 0; i < messages.messages.length; i++) {
@@ -113,7 +112,7 @@ function ChatMessage({ user, children, message, search }) {
             <MyButton
               src={Pin}
               handleClick={() => {
-                createPinRequest(message);
+                createPinRequest({ message: message, user: user });
               }}
             />
             <MyButton

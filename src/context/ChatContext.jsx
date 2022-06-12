@@ -33,6 +33,7 @@ export const ChatProvider = ({ children }) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [chatAim, setChatAim] = useState(null);
   const [searchError, setSearchError] = useState("");
+  const [pin, setPin] = useState(false);
   useEffect(() => {
     if (!searchOpen) {
       setSearchMessages([]);
@@ -147,27 +148,74 @@ export const ChatProvider = ({ children }) => {
   const createPinRequest = (element) => {
     setChatRequest(element);
   };
-  const deletePin = (id) => {};
-  const deletePinRequest = (element) => {
+  const deletePin = (event) => {
+    event.stopPropagation();
+    DelPin();
+    setPin(false);
+  };
+  const deletePinRequest = () => {
     setChatRequest(false);
   };
-  const makeNewPin = (id, mesId) => {
-    setChatRequest(false);
+  const makeNewPin = () => {
+    makePin();
+    setPin(chatRequest);
+    deletePinRequest();
+  };
+  const makePin = async () => {
+    let response = await fetch("http://localhost:8080/chat/pinned", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(authTokens.accessToken),
+      },
+      body: JSON.stringify({
+        message: chatRequest.message.messageId,
+        chat_id: chatid,
+      }),
+    });
+    let result = await response.json();
+    if (response.status === 200 && result) {
+      return true;
+    } else if (result.error === "Unauthorized") {
+      logoutUser();
+    } else {
+      throw new Error();
+    }
+  };
+  const DelPin = async () => {
+    let response = await fetch("http://localhost:8080/chat/dePinned", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(authTokens.accessToken),
+      },
+      body: JSON.stringify({ id: chatid }),
+    });
+    let result = await response.json();
+    if (response.status === 200 && result) {
+      return true;
+    } else if (result.error === "Unauthorized") {
+      logoutUser();
+    } else {
+      throw new Error();
+    }
   };
   const clean = () => {
     deleteReply();
+    deletePinRequest();
   };
   useEffect(() => {
     if (chatid === undefined) {
       navigate("/");
     }
-    console.log();
+
     if (chatid !== "start") {
       connect();
       findChatMessages(chatid).then((msgs) => {
         setMessages(msgs);
         setChatLoad(false);
         sessionStorage.setItem("chat", JSON.stringify(msgs));
+        processPin(msgs);
       });
     }
     return () => {
@@ -179,6 +227,15 @@ export const ChatProvider = ({ children }) => {
     };
     /* loadContacts(); */
   }, [chatid]);
+  const processPin = (msgs) => {
+    let m;
+    for (let i = 0; i < msgs.messages.length; i++) {
+      if (msgs.messages[i].fixed === true) {
+        m = { message: msgs.messages[i], user: msgs.users[i] };
+      }
+    }
+    setPin(m);
+  };
   const disconnected = () => {
     console.log("Disconnected");
   };
@@ -194,6 +251,7 @@ export const ChatProvider = ({ children }) => {
     var sockJS = new SockJS("http://localhost:8080/ws");
     stompClient = Stomp.over(sockJS);
     stompClient.connect({ id: user.id }, onConnected, onError);
+    stompClient.activate();
   };
 
   const onConnected = () => {
@@ -232,23 +290,18 @@ export const ChatProvider = ({ children }) => {
     loadContacts();
   };
 
-  const sendMessage = (msg) => {
+  const sendMessage = (msg, media) => {
     let date = new Date();
     let day = String(date.getDay());
     let month = String(date.getMonth());
     let hour = String(date.getHours());
     let minute = String(date.getMinutes());
-    if (msg.trim() !== "") {
+    if (msg.trim() !== "" || media !== -1) {
       let message = {
         user_id: user.id,
         chat_id: Number(chatid),
         text: msg,
         time: day + "." + month + " " + hour + ":" + minute,
-        media: {
-          id: 1,
-          content: false,
-          chat_id: 1,
-        },
       };
       if (reply) {
         message.ref = reply.id;
@@ -308,6 +361,7 @@ export const ChatProvider = ({ children }) => {
     setSearchError,
     searchOpen,
     searchValue,
+    pin,
   };
   return (
     <ChatContext.Provider value={contextData}>{children}</ChatContext.Provider>
