@@ -38,9 +38,7 @@ function ChatHeader({ type, info }) {
       setSearchError("");
     }
   }, [search]);
-  const handleEnterAudioCall = () => {
-    navigate(`${location.pathname}/audiocall`);
-  };
+
   const handleOpenAttch = () => {
     navigate(`${location.pathname}/attachment`);
   };
@@ -63,18 +61,11 @@ function ChatHeader({ type, info }) {
   const handlePopover = (event) => {
     setAnchorEl(event.currentTarget.firstChild);
   };
-  const handleCallPopover = (event) => {
-    setAnchorCallEl(event.currentTarget.firstChild);
-  };
+
   const handleClosePopover = () => {
     setAnchorEl(null);
   };
-  const handleCloseCallPopover = () => {
-    setAnchorCallEl(null);
-  };
-  const handleCreateAudio = () => {
-    console.log("create audio");
-  };
+
   const teamsChoiceState = Boolean(anchorEl);
   const videoCall = Boolean(anchorCallEl);
   return (

@@ -21,8 +21,14 @@
 .body {
   font-weight: 100;
   font-size: 13.15px;
-  max-width: 90%;
   line-height: 1.5;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  line-break: strict;
+  width: 80%;
+}
+.box {
+  width: 100%;
 }
 .title {
   display: flex;

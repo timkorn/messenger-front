@@ -5,6 +5,7 @@ import Loading from "../components/Loading";
 const AuthContext = createContext();
 export default AuthContext;
 export const AuthProvider = ({ children }) => {
+  let [userLoading, setUserLoading] = useState(true);
   let [authTokens, setAuthTokens] = useState(() =>
     localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens"))
@@ -16,6 +17,7 @@ export const AuthProvider = ({ children }) => {
       ? jwt_decode(localStorage.getItem("authTokens"))
       : null
   );
+  let [userData, setUserData] = useState(true);
   let navigate = useNavigate();
   let registerUser = async (data) => {
     const email = data.email;
@@ -95,12 +97,48 @@ export const AuthProvider = ({ children }) => {
       throw new Error();
     }
   };
+
   let logoutUser = () => {
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem("authTokens");
     navigate("/login");
   };
+  async function changeData(data, photo, name) {
+    let newPassword = data.newPassword;
+    let oldPassword = data.oldPassword;
+    let newAva = data.photo;
+    let newUsername = data.name;
+    if (!(newPassword && oldPassword)) {
+      newPassword = false;
+      oldPassword = false;
+    }
+    if (photo) {
+      newAva = false;
+    }
+    if (name) {
+      newUsername = false;
+    }
+    let response = await fetch("http://localhost:8080/change/userData", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(authTokens.accessToken),
+      },
+      body: JSON.stringify({ newPassword, oldPassword, newAva, newUsername }),
+    });
+    let result = await response.json();
+    if (response.status === 200) {
+      setAuthTokens(result);
+      setUser(jwt_decode(result.accessToken));
+      localStorage.setItem("authTokens", JSON.stringify(result));
+      return true;
+    } else if (result.error === "Unauthorized") {
+      logoutUser();
+    } else {
+      throw new Error();
+    }
+  }
   let contextData = {
     loginUser: loginUser,
     user: user,
@@ -108,6 +146,7 @@ export const AuthProvider = ({ children }) => {
     registerUser: registerUser,
     logout: logoutUser,
     authTokens: authTokens,
+    changeData,
   };
   let minutes = 1000 * 60;
   useEffect(() => {
@@ -128,7 +167,6 @@ export const AuthProvider = ({ children }) => {
       clearInterval(interval);
     };
   }, [authTokens, loading]);
-
   return (
     <AuthContext.Provider value={contextData}>
       {loading ? <Loading /> : children}

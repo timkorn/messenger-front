@@ -6,7 +6,7 @@ import AdditionalMessageLine from "../AdditionalMessageLine";
 import ChatContext from "../../context/ChatContext";
 import { useParams } from "react-router-dom";
 function MessageField() {
-  let { reply, red, redMessage, typeAddMesField, sendMessage } =
+  let { reply, red, redMessage, typeAddMesField, sendMessage, deleteReply } =
     useContext(ChatContext);
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && event.shiftKey === false) {
@@ -19,6 +19,7 @@ function MessageField() {
       const text = document.getElementById("textEnter").innerText;
       sendMessage(document.getElementById("textEnter").innerText);
       document.getElementById("textEnter").innerText = "";
+      deleteReply();
     }
   };
   return (

@@ -38,8 +38,13 @@ export const ChatProvider = ({ children }) => {
     }
   }, [searchOpen]);
   const handleMakeSearch = (value) => {
-    let serMess = messages.filter((item) => {
-      if (item.username !== -1 || item.username.text !== -1) {
+    let users = [];
+    let serMess = messages.messages.filter((item, i) => {
+      if (
+        messages.users[i].username.indexOf(value) !== -1 ||
+        item.text.indexOf(value) !== -1
+      ) {
+        users.push(messages.users[i]);
         return true;
       } else {
         return false;
@@ -48,9 +53,10 @@ export const ChatProvider = ({ children }) => {
     if (serMess.length === 0) {
       setSearchError("Нет подходящих сообщений");
     } else {
-      handleOpenSearch(serMess);
+      handleOpenSearch({ messages: serMess, users: users });
     }
   };
+
   const handleOpenSearch = (msg) => {
     setSearchMessages(msg);
     setSearchOpen(true);
@@ -58,7 +64,9 @@ export const ChatProvider = ({ children }) => {
   const handleCloseSearch = (id) => {
     setSearchMessages([]);
     setSearchOpen(false);
-    setChatAim(id);
+    if (id !== false) {
+      setChatAim(id);
+    }
   };
   async function showChats(type) {
     let response = await fetch("http://localhost:8080/chat/showChats", {
@@ -232,6 +240,11 @@ export const ChatProvider = ({ children }) => {
         chat_id: Number(chatid),
         text: msg,
         time: day + "." + month + " " + hour + ":" + minute,
+        media: {
+          id: 1,
+          content: false,
+          chat_id: 1,
+        },
       };
       if (reply) {
         message.ref = reply.id;
@@ -289,6 +302,7 @@ export const ChatProvider = ({ children }) => {
     searchError,
     setSearchOpen,
     setSearchError,
+    searchOpen,
   };
   return (
     <ChatContext.Provider value={contextData}>{children}</ChatContext.Provider>

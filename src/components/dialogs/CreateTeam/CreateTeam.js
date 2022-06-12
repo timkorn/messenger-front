@@ -109,7 +109,7 @@ const CreateTeam = ({ handleClose, open }) => {
                   alt="фото профиля"
                 />
                 <div>
-                  <p>Фото профиля</p>
+                  <p>Фото команды</p>
                   <div>
                     <Button
                       variant="outlined"

@@ -9,8 +9,9 @@ import MyButton from "../MyButton";
 import Pin from "../img/Pin.svg";
 import { MyTextField2 } from "../MyTextField/MyTextField";
 import AuthContext from "../../context/AuthContext";
-function ChatMessage({ user, children, message }) {
-  let { createReply, createPinRequest, createRed } = useContext(ChatContext);
+function ChatMessage({ user, children, message, search }) {
+  let { createReply, createPinRequest, setChatAim, handleCloseSearch } =
+    useContext(ChatContext);
   let { messages } = useContext(ChatContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [mouseOut, setMouseOut] = useState(true);
@@ -43,15 +44,24 @@ function ChatMessage({ user, children, message }) {
   const handlePopover = (event) => {
     setAnchorEl(event.target);
   };
+  const handleClickRef = () => {
+    setChatAim(message.ref);
+  };
   const open = Boolean(anchorEl);
   return (
     <div
       className={cn(s.root, !mouseOut && s.blockHover, reference && s.reply)}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
+      id={message.messageId}
+      onClick={() => {
+        if (search) {
+          handleCloseSearch(message.messageId);
+        }
+      }}
     >
       {reference && (
-        <>
+        <div onClick={!search && handleClickRef}>
           <div className={s.parent}>
             <div className={s.child}></div>
           </div>
@@ -76,12 +86,12 @@ function ChatMessage({ user, children, message }) {
               {reference.text}
             </span>
           </div>
-        </>
+        </div>
       )}
       <div className={s.ava}>
         <img className={s.img} src={user.avatar} alt="Аватарка" />
       </div>
-      <div>
+      <div className={s.box}>
         <div className={s.title}>
           <p
             style={{
@@ -98,18 +108,22 @@ function ChatMessage({ user, children, message }) {
         <p className={s.body}>{children}</p>
       </div>
       <div className={cn(s.functions, mouseOut && s.hidden)}>
-        <MyButton
-          src={Pin}
-          handleClick={() => {
-            createPinRequest(message);
-          }}
-        />
-        <MyButton
-          src={reply}
-          handleClick={() => {
-            createReply(user.username, children, message.messageId);
-          }}
-        />
+        {!search && (
+          <>
+            <MyButton
+              src={Pin}
+              handleClick={() => {
+                createPinRequest(message);
+              }}
+            />
+            <MyButton
+              src={reply}
+              handleClick={() => {
+                createReply(user.username, children, message.messageId);
+              }}
+            />
+          </>
+        )}
       </div>
       <Popover
         open={open}

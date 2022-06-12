@@ -17,3 +17,17 @@
     }
   }
 }
+
+.search {
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  height: calc(100vh - 75px);
+  z-index: 1000;
+  background-color: black;
+}
+
+.hidden {
+  display: none;
+}
