@@ -24,11 +24,21 @@ const formStyle = {
   autoComplete: "off",
   color: "white",
 };
+function goTo(link) {
+  window.open(link, "_blank");
+}
 function ChatHeader({ type, info }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { handleMakeSearch, searchError, setSearchError } =
-    useContext(ChatContext);
+  const {
+    handleMakeSearch,
+    searchError,
+    setSearchError,
+    CorLink,
+    takeLinks,
+    setCorLink,
+  } = useContext(ChatContext);
+  console.log(CorLink);
   const [call, setCall] = useState(true);
   const [search, setSearch] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -39,9 +49,6 @@ function ChatHeader({ type, info }) {
     }
   }, [search]);
 
-  const handleOpenAttch = () => {
-    navigate(`${location.pathname}/attachment`);
-  };
   const handleKeyDown = (event) => {
     if (
       event.key === "Enter" &&
@@ -67,7 +74,12 @@ function ChatHeader({ type, info }) {
   };
 
   const teamsChoiceState = Boolean(anchorEl);
-  const videoCall = Boolean(anchorCallEl);
+
+  useEffect(() => {
+    if (teamsChoiceState) {
+      takeLinks(0);
+    }
+  }, [teamsChoiceState]);
   return (
     <header id="channel__header">
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -172,8 +184,26 @@ function ChatHeader({ type, info }) {
         >
           <div className="popover team-popover" style={{ paddingTop: "10px" }}>
             <div className="team-popover-choice">
-              <MyTextButton handleClick={handleOpenAttch} image={attached}>
-                Показать вложения
+              <MyTextButton
+                handleClick={() => {
+                  goTo(CorLink.when2meet);
+                }}
+              >
+                when2meet
+              </MyTextButton>
+              <MyTextButton
+                handleClick={() => {
+                  goTo(CorLink.google);
+                }}
+              >
+                googleMeet
+              </MyTextButton>
+              <MyTextButton
+                handleClick={() => {
+                  goTo(CorLink.github);
+                }}
+              >
+                gitHub
               </MyTextButton>
             </div>
           </div>

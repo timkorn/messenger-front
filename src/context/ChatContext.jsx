@@ -34,6 +34,11 @@ export const ChatProvider = ({ children }) => {
   const [chatAim, setChatAim] = useState(null);
   const [searchError, setSearchError] = useState("");
   const [pin, setPin] = useState(false);
+  const [CorLink, setCorLink] = useState({
+    when2meet: "https://www.when2meet.com/",
+    google: "https://apps.google.com/meet/",
+    github: "https://github.com/",
+  });
   useEffect(() => {
     if (!searchOpen) {
       setSearchMessages([]);
@@ -203,6 +208,11 @@ export const ChatProvider = ({ children }) => {
   const clean = () => {
     deleteReply();
     deletePinRequest();
+    setCorLink({
+      when2meet: "https://www.when2meet.com/",
+      google: "https://apps.google.com/meet/",
+      github: "https://github.com/",
+    });
   };
   useEffect(() => {
     if (chatid === undefined) {
@@ -216,6 +226,7 @@ export const ChatProvider = ({ children }) => {
         setChatLoad(false);
         sessionStorage.setItem("chat", JSON.stringify(msgs));
         processPin(msgs);
+        takeLinks(1);
       });
     }
     return () => {
@@ -304,19 +315,24 @@ export const ChatProvider = ({ children }) => {
         ? "0" + subbed.getMinutes()
         : subbed.getMinutes();
     let correct_date = `${hour}:${min}`;
-    if (msg.trim() !== "" || media !== -1) {
-      let message = {
-        user_id: user.id,
-        chat_id: Number(chatid),
-        text: msg,
-        time: correct_date,
-      };
-      if (reply) {
-        message.ref = reply.id;
-      }
-      console.log("send mes", message);
-      stompClient.send("/app/chat", {}, JSON.stringify(message));
+    if (
+      msg.indexOf("@when2meet") !== -1 ||
+      msg.indexOf("@github") !== -1 ||
+      msg.indexOf("@meeting") !== -1
+    ) {
+      msg += " ";
     }
+    let message = {
+      user_id: user.id,
+      chat_id: Number(chatid),
+      text: msg,
+      time: correct_date,
+    };
+    if (reply) {
+      message.ref = reply.id;
+    }
+    console.log("send mes", message);
+    stompClient.send("/app/chat", {}, JSON.stringify(message));
   };
 
   const loadContacts = () => {
@@ -337,6 +353,49 @@ export const ChatProvider = ({ children }) => {
         }
       })
     );  */
+  };
+  const takeLinks = async (num) => {
+    let response = await fetch("http://localhost:8080/chat/getRef", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(authTokens.accessToken),
+      },
+      body: JSON.stringify({ id: chatid }),
+    });
+    let result = await response.json();
+    console.log("links", result);
+    if (response.status === 200) {
+      let newCorLink;
+      if (num) {
+        newCorLink = {
+          when2meet: "https://www.when2meet.com/",
+          google: "https://apps.google.com/meet/",
+          github: "https://github.com/",
+        };
+      } else {
+        newCorLink = {
+          when2meet: CorLink.when2meet,
+          google: CorLink.google,
+          github: CorLink.github,
+        };
+      }
+      if (result[0].w2m !== null) {
+        newCorLink.when2meet = result[0].w2m;
+      }
+      if (result[0].git !== null) {
+        newCorLink.github = result[0].git;
+      }
+      if (result[0].meeting !== null) {
+        newCorLink.google = result[0].meeting;
+      }
+      console.log("My items", newCorLink);
+      setCorLink(newCorLink);
+    } else if (result.error === "Unauthorized") {
+      logoutUser();
+    } else {
+      throw new Error();
+    }
   };
   let contextData = {
     createReply,
@@ -370,6 +429,9 @@ export const ChatProvider = ({ children }) => {
     searchOpen,
     searchValue,
     pin,
+    CorLink,
+    setCorLink,
+    takeLinks,
   };
   return (
     <ChatContext.Provider value={contextData}>{children}</ChatContext.Provider>
