@@ -7,7 +7,7 @@ import ChatContext from "../../context/ChatContext";
 import AuthContext from "../../context/AuthContext";
 import MyButton from "../MyButton";
 import cross from "../img/Cross.svg";
-function Messages({ type }) {
+function Messages() {
   let { typeAddMesField, chatLoad, messages, chatAim, setChatAim, pin } =
     useContext(ChatContext);
   const [person, setPerson] = useState(null);
@@ -55,6 +55,7 @@ function Messages({ type }) {
           typeAddMesField && s.reply,
           searchOpen && s.search
         )}
+        id="mainMessagerProcessor"
       >
         {searchOpen ? (
           <>

@@ -5,9 +5,11 @@ import ChatHeader from "./ChatHeader/ChatHeader.js";
 import { useParams } from "react-router-dom";
 import ChatContext from "../context/ChatContext.jsx";
 import { useContext } from "react";
+import PinnedMessages from "./PinnedMessages/PinnedMessage.js";
+
 function PersonalChat() {
   const { chatid } = useParams();
-  const { chats } = useContext(ChatContext);
+  const { chats, pin, searchOpen, chatRequest } = useContext(ChatContext);
   let chat;
   if (chatid !== "start" && chats.chats != undefined) {
     chat = chats.chats.filter((item) => item.id === Number(chatid));
@@ -28,12 +30,11 @@ function PersonalChat() {
         </div>
       ) : (
         <div id="channel-wrapper">
-          <ChatHeader type="chat" info={chat[0]} />
+          {chat && <ChatHeader type="chat" info={chat[0]} />}
           <div id="channel-main">
             <div id="channel-main__messages">
-              <div id="channel-main_message-list">
-                <Messages type="channel" />
-              </div>
+              {(pin || searchOpen || chatRequest) && <PinnedMessages />}
+              <Messages />
               <MessageField />
             </div>
           </div>

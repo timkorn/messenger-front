@@ -2,7 +2,7 @@ import { Button, Dialog, Popover } from "@mui/material";
 import { Form, Formik } from "formik";
 import Hashtag from "./img/hashtag.svg";
 import { useContext, useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useMatch, useParams } from "react-router-dom";
 import * as yup from "yup";
 import AuthContext from "../../context/AuthContext";
 import cross from "../img/Cross.svg";
@@ -280,5 +280,15 @@ function ChannelButton({ id, name, team_id }) {
     </NavLink>
   );
 }
-
+/* function LinkWrapper({ link, children }) {
+  const match = useMatch(link + "/*");
+  return (
+    <NavLink
+      to={link + "/start"}
+      className={match ? "sidebar_choice activeSidebar" : "sidebar_choice"}
+    >
+      {c}
+    </NavLink>
+  );
+} */
 export default Sidebar;

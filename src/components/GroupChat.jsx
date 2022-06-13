@@ -5,9 +5,11 @@ import ChatHeader from "./ChatHeader/ChatHeader.js";
 import { useParams } from "react-router-dom";
 import ChatContext from "../context/ChatContext.jsx";
 import { useContext } from "react";
+import PinnedMessages from "./PinnedMessages/PinnedMessage.js";
+
 function GroupChat() {
   const { chatid } = useParams();
-  const { chats } = useContext(ChatContext);
+  const { chats, pin, searchOpen, chatRequest } = useContext(ChatContext);
   let chat;
   if (chatid !== "start" && chats.chats != undefined) {
     let chats2 = chats.chats;
@@ -30,12 +32,11 @@ function GroupChat() {
         </div>
       ) : (
         <div id="channel-wrapper">
-          <ChatHeader type="groupchat" info={chat[0]} />
+          {chat && <ChatHeader type="groupchat" info={chat[0]} />}
           <div id="channel-main">
             <div id="channel-main__messages">
-              <div id="channel-main_message-list">
-                <Messages type="groupchat" />
-              </div>
+              {(pin || searchOpen || chatRequest) && <PinnedMessages />}
+              <Messages />
               <MessageField />
             </div>
           </div>

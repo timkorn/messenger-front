@@ -30,6 +30,16 @@ function ChatMessage({ user, children, message, search }) {
       setReference(info);
     }
   }, []);
+  useEffect(() => {
+    if (
+      reference &&
+      messages.messages[messages.messages.length - 1].messageId ===
+        message.messageId
+    ) {
+      let r = document.getElementById("mainMessagerProcessor");
+      r.scrollTop = r.scrollHeight;
+    }
+  }, [reference]);
   const handleMouseOver = () => {
     setMouseOut(false);
   };

@@ -223,6 +223,9 @@ export const ChatProvider = ({ children }) => {
       if (stompClient !== null) {
         stompClient.disconnect(disconnected, {});
       }
+      /* if (chatid !== "start") {
+        setChats([]);
+      } */
       clean();
     };
     /* loadContacts(); */
@@ -291,17 +294,22 @@ export const ChatProvider = ({ children }) => {
   };
 
   const sendMessage = (msg, media) => {
-    let date = new Date();
-    let day = String(date.getDay());
-    let month = String(date.getMonth());
-    let hour = String(date.getHours());
-    let minute = String(date.getMinutes());
+    let subbed = new Date();
+    let hour =
+      subbed.getHours().toString().length < 2
+        ? "0" + subbed.getHours()
+        : subbed.getHours();
+    let min =
+      subbed.getMinutes().toString().length < 2
+        ? "0" + subbed.getMinutes()
+        : subbed.getMinutes();
+    let correct_date = `${hour}:${min}`;
     if (msg.trim() !== "" || media !== -1) {
       let message = {
         user_id: user.id,
         chat_id: Number(chatid),
         text: msg,
-        time: day + "." + month + " " + hour + ":" + minute,
+        time: correct_date,
       };
       if (reply) {
         message.ref = reply.id;

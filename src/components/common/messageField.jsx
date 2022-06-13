@@ -69,37 +69,8 @@ function MessageField() {
       }}
     >
       <div id="mainTextField">
-        {(reply || red) && (
-          <AdditionalMessageLine element={reply ? reply : red} />
-        )}
-        <Button
-          variant="outlined"
-          component="label"
-          /* className={s.button} */
-          style={{
-            fontSize: "10px",
-            borderWidth: "0px",
-            padding: "0px",
-            minWidth: "0px",
-          }}
-          disableRipple={true}
-        >
-          <img src={add} />
-          <input
-            type="file"
-            name="photo"
-            hidden
-            accept="image/*"
-            onChange={(e) => {
-              const reader = new FileReader();
-              const files = e.target.files[0];
-              reader.readAsDataURL(files);
-              reader.onload = (event) => {
-                handlePhoto(event.target.result);
-              };
-            }}
-          />
-        </Button>
+        {reply && <AdditionalMessageLine element={reply} />}
+
         <Dialog
           onClose={handlePhotoClose}
           className="modal-central"

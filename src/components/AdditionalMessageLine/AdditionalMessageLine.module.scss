@@ -9,6 +9,7 @@
   align-items: center;
   border-radius: 15px;
   z-index: 100;
+  overflow: hidden;
 }
 .reply {
   height: 30px;
@@ -21,6 +22,8 @@
 }
 .deleteButton {
   margin-right: 15px;
+  position: absolute;
+  right: 0px;
   img {
     height: 30px;
     width: 30px;

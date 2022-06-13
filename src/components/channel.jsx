@@ -9,15 +9,20 @@ import ChatContext from "../context/ChatContext.jsx";
 function Channel() {
   const { chatid } = useParams();
   const { channels } = useContext(TeamContext);
-  const name = channels.name[channels.id.indexOf(Number(chatid))];
+
   const { pin, searchOpen, chatRequest } = useContext(ChatContext);
   return (
     <div id="channel-wrapper">
-      <ChatHeader type="channel" info={name} />
+      {channels.name && (
+        <ChatHeader
+          type="channel"
+          info={channels.name[channels.id.indexOf(Number(chatid))]}
+        />
+      )}
       <div id="channel-main">
         <div id="channel-main__messages">
           {(pin || searchOpen || chatRequest) && <PinnedMessages />}
-          <Messages type="channel" pin={true} />
+          <Messages />
           <MessageField />
         </div>
       </div>
