@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { MyTextField2 } from "../../MyTextField/MyTextField";
 import s from "./CreateChat.module.scss";
 import UniversalLoader from "../../common/loader";
-import Ava from "../../img/ava.png";
+import Ava from "../../startImages/group.png";
 import { Button } from "@mui/material";
 import ChatContext from "../../../context/ChatContext";
 const formStyle = {
@@ -161,7 +161,6 @@ function CreateChat({ handleClose, open, type }) {
           }}
           validationSchema={type === "groupchat" && settingsShema}
           onSubmit={(data) => {
-            console.log("creating chat");
             if (people == []) {
               setPeopleError("Добавьте собеседников");
             } else if (people.length < 2 && type === "groupchat") {
@@ -204,7 +203,6 @@ function CreateChat({ handleClose, open, type }) {
                   if (result1.id < personId) {
                     name = result1.username + "," + personName;
                     ava = result1.avatar + " " + personAva;
-                    console.log(ava.split(" "));
                   } else {
                     name = personName + "," + result1.username;
                     ava = personAva + " " + result1.avatar;
@@ -223,7 +221,6 @@ function CreateChat({ handleClose, open, type }) {
                 );
                 let result = await response.json();
                 if (response.status === 200) {
-                  console.log(result);
                   setLoad(false);
                   handleClose();
                   showChats(t);

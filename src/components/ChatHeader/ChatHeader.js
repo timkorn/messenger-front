@@ -38,7 +38,7 @@ function ChatHeader({ type, info }) {
     takeLinks,
     setCorLink,
   } = useContext(ChatContext);
-  console.log(CorLink);
+
   const [call, setCall] = useState(true);
   const [search, setSearch] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -237,7 +237,12 @@ function ChannelTitle({ info }) {
 function PersonalChatTitle({ info }) {
   return (
     <div id="chat__header-title">
-      <img src={info.ava} alt="hash" className="chat__header-title__img" />
+      <img
+        src={info.ava}
+        alt="hash"
+        className="chat__header-title__img"
+        style={{ width: "40px", height: "40px", borderRadius: "100px" }}
+      />
       <span className="chat_header__name">{info.name}</span>
     </div>
   );

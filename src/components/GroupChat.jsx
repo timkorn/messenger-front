@@ -13,7 +13,7 @@ function GroupChat() {
   let chat;
   if (chatid !== "start" && chats.chats != undefined) {
     let chats2 = chats.chats;
-    console.log(chats2);
+
     chat = chats2.filter((item) => item.id === Number(chatid));
   }
   return (

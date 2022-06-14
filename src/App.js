@@ -14,14 +14,7 @@ import GroupChat from "./components/GroupChat.jsx";
 import { TeamProvider } from "./context/TeamContext.jsx";
 import StartChoice from "./components/StartChoice.jsx";
 import Data from "./components/Data.jsx";
-/* localhost8080/:id/groupchat||chat/:chatid 
-  localhost8080/:id/:chatid
-  localhost8080/:id
-  localhost8080/login
-  react-router-dom
-  contex api
-  material ui 
-*/
+
 function App() {
   return (
     <BrowserRouter>
@@ -100,7 +93,7 @@ function App() {
                     flexDirection: "column",
                   }}
                 >
-                  <span>ТУВАСИК!!!</span>
+                  <span>Выберите канал или создайте его</span>
                 </div>
               }
             />

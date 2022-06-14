@@ -44,7 +44,7 @@ function StartChoice() {
           alignItems: "center",
         }}
       >
-        <h1>{user.sub}, добро пожаловать в ТУВАСИК!!!</h1>
+        <h1>{user.sub}, добро пожаловать в corporate!!!</h1>
 
         <div
           style={{

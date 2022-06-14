@@ -93,7 +93,7 @@ export const ChatProvider = ({ children }) => {
         let people = result.chats[i].participants.split(" ");
         let names = result.chats[i].name.split(",");
         let images = result.chats[i].ava.split(" ");
-        console.log("Images:", images);
+
         let me, other;
         people[0] = Number(people[0]);
         people[1] = Number(people[1]);
@@ -114,7 +114,6 @@ export const ChatProvider = ({ children }) => {
       }
     }
     if (response.status === 200) {
-      console.log(result);
       setChats(result);
       return result;
     } else if (result.error === "Unauthorized") {
@@ -253,14 +252,7 @@ export const ChatProvider = ({ children }) => {
   const disconnected = () => {
     console.log("Disconnected");
   };
-  /*  useEffect(() => {
-    connect();
-    findChatMessages(chatid).then((msgs) => {
-      setMessages(msgs);
-      setChatLoad(false);
-      console.log(msgs);
-    });
-  }, []); */
+
   const connect = () => {
     var sockJS = new SockJS("http://localhost:8080/ws");
     stompClient = Stomp.over(sockJS);
@@ -269,7 +261,6 @@ export const ChatProvider = ({ children }) => {
   };
 
   const onConnected = () => {
-    console.log("connected");
     stompClient.subscribe(
       "/user/" + chatid + "/queue/messages",
       onMessageReceived
@@ -283,7 +274,7 @@ export const ChatProvider = ({ children }) => {
   const onMessageReceived = (msg) => {
     const mess = JSON.parse(msg.body);
     let mess1 = JSON.parse(sessionStorage.getItem("chat"));
-    console.log(mess);
+
     const newMessages = {
       messages: [...mess1.messages, mess.message],
       users: [...mess1.users, mess.user],
@@ -331,7 +322,7 @@ export const ChatProvider = ({ children }) => {
     if (reply) {
       message.ref = reply.id;
     }
-    console.log("send mes", message);
+
     stompClient.send("/app/chat", {}, JSON.stringify(message));
   };
 
@@ -364,7 +355,6 @@ export const ChatProvider = ({ children }) => {
       body: JSON.stringify({ id: chatid }),
     });
     let result = await response.json();
-    console.log("links", result);
     if (response.status === 200) {
       let newCorLink;
       if (num) {
@@ -389,7 +379,7 @@ export const ChatProvider = ({ children }) => {
       if (result[0].meeting !== null) {
         newCorLink.google = result[0].meeting;
       }
-      console.log("My items", newCorLink);
+
       setCorLink(newCorLink);
     } else if (result.error === "Unauthorized") {
       logoutUser();

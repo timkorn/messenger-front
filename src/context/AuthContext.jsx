@@ -5,18 +5,17 @@ import Loading from "../components/Loading";
 const AuthContext = createContext();
 export default AuthContext;
 export const AuthProvider = ({ children }) => {
-  let [userLoading, setUserLoading] = useState(true);
   let [authTokens, setAuthTokens] = useState(() =>
     localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens"))
       : null
   );
-  let [loading, setLoading] = useState(true);
   let [user, setUser] = useState(() =>
     localStorage.getItem("authTokens")
       ? jwt_decode(localStorage.getItem("authTokens"))
       : null
   );
+  let [loading, setLoading] = useState(true);
   let [userData, setUserData] = useState(true);
   let navigate = useNavigate();
   let registerUser = async (data) => {
@@ -48,7 +47,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
   let updateToken = async (data) => {
-    console.log("Hello update!!!!!!!");
     let response = await fetch("http://localhost:8080/auth/token", {
       method: "POST",
       headers: {
@@ -159,7 +157,6 @@ export const AuthProvider = ({ children }) => {
     }
     let interval = setInterval(() => {
       if (authTokens) {
-        console.log("Hello!!!");
         updateToken();
       }
     }, minutes * 10);

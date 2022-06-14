@@ -13,7 +13,7 @@ import MyLoadingButton from "../../MyLoadingButton";
 import { LayoutGroupContext } from "framer-motion";
 import AuthContext from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import Ava from "../../img/ava.png";
+import Ava from "../../startImages/group.png";
 import { Button } from "@mui/material";
 const formStyle = {
   style: { color: "white", width: "250px", padding: "10px 10px" },

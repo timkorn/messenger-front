@@ -9,7 +9,7 @@ import AuthContext from "../context/AuthContext.jsx";
 import { useContext } from "react";
 import MyLoadingButton from "./MyLoadingButton";
 import { MyTextField } from "./MyTextField/MyTextField.js";
-import Ava from "./img/ava.png";
+import Ava from "./startImages/person.png";
 const formStyle = {
   style: { color: "white", width: "250px" },
   autoComplete: "off",
@@ -108,7 +108,7 @@ const Register = () => {
                 />
               </div>
               <MyLoadingButton loading={loading}>
-                Зарегестрироваться
+                Зарегистрироваться
               </MyLoadingButton>
             </Form>
           )}

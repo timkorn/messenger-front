@@ -87,7 +87,7 @@ const Login = () => {
             )}
           </Formik>
           <Link to="/register" className="registerLink">
-            Зарегестрироваться
+            Зарегистрироваться
           </Link>
         </div>
       </div>
